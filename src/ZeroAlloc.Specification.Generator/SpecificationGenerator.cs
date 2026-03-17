@@ -11,45 +11,55 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        // ZA001: Catch non-struct types decorated with [Specification]
+        var nonStructs = context.SyntaxProvider
+            .ForAttributeWithMetadataName(
+                "ZeroAlloc.Specification.SpecificationAttribute",
+                predicate: static (node, _) => node is not StructDeclarationSyntax,
+                transform: static (ctx, _) => (
+                    Name: (ctx.TargetSymbol as INamedTypeSymbol)?.Name ?? "unknown",
+                    Location: ctx.TargetNode.GetLocation()))
+            .Where(static x => x.Name != null);
+
+        context.RegisterSourceOutput(nonStructs, static (ctx, data) =>
+            ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.NotAStruct, data.Location, data.Name)));
+
         var specs = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 "ZeroAlloc.Specification.SpecificationAttribute",
                 predicate: static (node, _) => node is StructDeclarationSyntax,
                 transform: static (ctx, _) => GetSpecificationData(ctx))
-            .Where(static data => data.Info is not null);
+            .Where(static info => info is not null)
+            .Select(static (info, _) => info!);
 
-        // Diagnostics pipeline — does not need to be cached (location included)
-        context.RegisterSourceOutput(specs, static (ctx, data) =>
+        context.RegisterSourceOutput(specs, static (ctx, info) =>
         {
-            var info = data.Info!;
-            var location = data.Location;
-
             if (!info.HasInterface)
             {
-                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.MissingInterface, location, info.TypeName));
+                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.MissingInterface, info.Location, info.TypeName));
                 return;
             }
 
             if (!info.IsPartial)
             {
-                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.NotPartial, location, info.TypeName));
+                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.NotPartial, info.Location, info.TypeName));
                 return;
             }
 
             if (!info.IsReadOnly)
-                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.NotReadonly, location, info.TypeName));
+                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.NotReadonly, info.Location, info.TypeName));
 
             var source = GenerateSource(info);
             ctx.AddSource($"{info.TypeName}.g.cs", SourceText.From(source, Encoding.UTF8));
         });
     }
 
-    private static (SpecificationInfo? Info, Location Location) GetSpecificationData(GeneratorAttributeSyntaxContext ctx)
+    private static SpecificationInfo? GetSpecificationData(GeneratorAttributeSyntaxContext ctx)
     {
         var location = ctx.TargetNode.GetLocation();
 
         if (ctx.TargetSymbol is not INamedTypeSymbol structSymbol)
-            return (null, location);
+            return null;
 
         var specInterface = structSymbol.AllInterfaces
             .FirstOrDefault(i =>
@@ -66,16 +76,15 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
             .OfType<IFieldSymbol>()
             .Any(f => !f.IsStatic);
 
-        var info = new SpecificationInfo(
+        return new SpecificationInfo(
             structSymbol.Name,
             structSymbol.ContainingNamespace.ToDisplayString(),
             candidateType,
             isStateless,
             structSymbol.IsReadOnly,
             structSymbol.IsPartialDefinition(),
-            hasInterface);
-
-        return (info, location);
+            hasInterface,
+            location);
     }
 
     private static string GenerateSource(SpecificationInfo info)
@@ -122,6 +131,7 @@ internal sealed class SpecificationInfo
     public bool IsReadOnly { get; }
     public bool IsPartial { get; }
     public bool HasInterface { get; }
+    public Location Location { get; }
 
     public SpecificationInfo(
         string typeName,
@@ -130,7 +140,8 @@ internal sealed class SpecificationInfo
         bool isStateless,
         bool isReadOnly,
         bool isPartial,
-        bool hasInterface)
+        bool hasInterface,
+        Location location)
     {
         TypeName = typeName;
         Namespace = @namespace;
@@ -139,6 +150,7 @@ internal sealed class SpecificationInfo
         IsReadOnly = isReadOnly;
         IsPartial = isPartial;
         HasInterface = hasInterface;
+        Location = location;
     }
 
     public override bool Equals(object? obj) =>
