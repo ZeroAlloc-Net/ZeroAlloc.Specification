@@ -12,11 +12,13 @@ public class GeneratorSnapshotTests
 {
     private static Compilation CreateCompilation(string source)
     {
-        var references = AppDomain.CurrentDomain.GetAssemblies()
-            .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
-            .Select(a => MetadataReference.CreateFromFile(a.Location))
-            .Cast<MetadataReference>()
-            .ToList();
+        // Reference core library types explicitly — more reliable than AppDomain.GetAssemblies()
+        var references = new[]
+        {
+            MetadataReference.CreateFromFile(typeof(object).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Linq.Expressions.Expression).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(ZeroAlloc.Specification.ISpecification<>).Assembly.Location),
+        };
 
         return CSharpCompilation.Create(
             "TestAssembly",
@@ -50,6 +52,8 @@ public class GeneratorSnapshotTests
         var result = driver.GetRunResult();
 
         result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+
+        result.GeneratedTrees.Should().HaveCount(1);
 
         var specSource = result.GeneratedTrees
             .First(t => t.FilePath.Contains("ActiveSpec"))
