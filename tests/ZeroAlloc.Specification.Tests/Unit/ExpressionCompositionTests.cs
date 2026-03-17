@@ -55,6 +55,10 @@ public class ExpressionCompositionTests
         var andAlso = (BinaryExpression)expr.Body;
         var leftParam = ((BinaryExpression)andAlso.Left).Left as ParameterExpression;
         var rightParam = ((BinaryExpression)andAlso.Right).Left as ParameterExpression;
+
+        leftParam.Should().NotBeNull("andAlso.Left should be a BinaryExpression with a ParameterExpression on the left");
+        rightParam.Should().NotBeNull("andAlso.Right should be a BinaryExpression with a ParameterExpression on the left");
+
         ReferenceEquals(leftParam, rightParam).Should().BeTrue(
             "parameter rebinding must produce a single shared ParameterExpression for EF Core translation");
     }
