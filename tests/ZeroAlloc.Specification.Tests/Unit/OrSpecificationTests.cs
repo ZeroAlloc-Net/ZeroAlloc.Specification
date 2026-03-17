@@ -19,6 +19,18 @@ public class OrSpecificationTests
         public Expression<Func<int, bool>> ToExpression() => x => x > 100;
     }
 
+    private readonly struct GT0Spec : ISpecification<int>
+    {
+        public bool IsSatisfiedBy(int x) => x > 0;
+        public Expression<Func<int, bool>> ToExpression() => x => x > 0;
+    }
+
+    private readonly struct LT10Spec : ISpecification<int>
+    {
+        public bool IsSatisfiedBy(int x) => x < 10;
+        public Expression<Func<int, bool>> ToExpression() => x => x < 10;
+    }
+
     [Fact]
     public void IsSatisfiedBy_ReturnsTrueWhenLeftSatisfied()
     {
@@ -38,6 +50,13 @@ public class OrSpecificationTests
     {
         var spec = new OrSpecification<NegativeSpec, GT100Spec, int>(new(), new());
         spec.IsSatisfiedBy(50).Should().BeFalse();
+    }
+
+    [Fact]
+    public void IsSatisfiedBy_ReturnsTrueWhenBothSatisfied()
+    {
+        var spec = new OrSpecification<GT0Spec, LT10Spec, int>(new(), new());
+        spec.IsSatisfiedBy(5).Should().BeTrue(); // 5 > 0 AND 5 < 10 — both true
     }
 
     [Fact]
