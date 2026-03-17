@@ -1,9 +1,0 @@
-<Solution>
-  <Folder Name="/src/">
-    <Project Path="src/ZeroAlloc.Specification.Generator/ZeroAlloc.Specification.Generator.csproj" />
-    <Project Path="src/ZeroAlloc.Specification/ZeroAlloc.Specification.csproj" />
-  </Folder>
-  <Folder Name="/tests/">
-    <Project Path="tests/ZeroAlloc.Specification.Tests/ZeroAlloc.Specification.Tests.csproj" />
-  </Folder>
-</Solution>
