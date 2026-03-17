@@ -19,6 +19,18 @@ public class SpecBuilderTests
         public Expression<Func<int, bool>> ToExpression() => x => x < 10;
     }
 
+    private readonly struct NegativeSpec : ISpecification<int>
+    {
+        public bool IsSatisfiedBy(int x) => x < 0;
+        public Expression<Func<int, bool>> ToExpression() => x => x < 0;
+    }
+
+    private readonly struct GT100Spec : ISpecification<int>
+    {
+        public bool IsSatisfiedBy(int x) => x > 100;
+        public Expression<Func<int, bool>> ToExpression() => x => x > 100;
+    }
+
     [Fact]
     public void And_ProducesAndSpecification()
     {
@@ -30,9 +42,10 @@ public class SpecBuilderTests
     [Fact]
     public void Or_ProducesOrSpecification()
     {
-        var spec = Spec.Or<GT0Spec, LT10Spec, int>(new(), new());
-        // GT0 || LT10 is always true for any int, use Not to test or
-        spec.IsSatisfiedBy(5).Should().BeTrue();
+        var spec = Spec.Or<NegativeSpec, GT100Spec, int>(new(), new());
+        spec.IsSatisfiedBy(-5).Should().BeTrue();   // covered by left
+        spec.IsSatisfiedBy(200).Should().BeTrue();  // covered by right
+        spec.IsSatisfiedBy(50).Should().BeFalse(); // covered by neither
     }
 
     [Fact]
