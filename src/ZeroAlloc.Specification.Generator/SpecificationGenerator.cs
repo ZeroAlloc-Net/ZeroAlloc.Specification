@@ -11,54 +11,71 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Pipeline: find structs with [Specification] attribute
         var specs = context.SyntaxProvider
             .ForAttributeWithMetadataName(
                 "ZeroAlloc.Specification.SpecificationAttribute",
                 predicate: static (node, _) => node is StructDeclarationSyntax,
-                transform: static (ctx, _) => GetSpecificationInfo(ctx))
-            .Where(static info => info is not null)
-            .Select(static (info, _) => info!);
+                transform: static (ctx, _) => GetSpecificationData(ctx))
+            .Where(static data => data.Info is not null);
 
-        context.RegisterSourceOutput(specs, static (ctx, info) => Execute(ctx, info));
+        // Diagnostics pipeline — does not need to be cached (location included)
+        context.RegisterSourceOutput(specs, static (ctx, data) =>
+        {
+            var info = data.Info!;
+            var location = data.Location;
+
+            if (!info.HasInterface)
+            {
+                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.MissingInterface, location, info.TypeName));
+                return;
+            }
+
+            if (!info.IsPartial)
+            {
+                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.NotPartial, location, info.TypeName));
+                return;
+            }
+
+            if (!info.IsReadOnly)
+                ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.NotReadonly, location, info.TypeName));
+
+            var source = GenerateSource(info);
+            ctx.AddSource($"{info.TypeName}.g.cs", SourceText.From(source, Encoding.UTF8));
+        });
     }
 
-    private static SpecificationInfo? GetSpecificationInfo(GeneratorAttributeSyntaxContext ctx)
+    private static (SpecificationInfo? Info, Location Location) GetSpecificationData(GeneratorAttributeSyntaxContext ctx)
     {
-        if (ctx.TargetSymbol is not INamedTypeSymbol structSymbol)
-            return null;
+        var location = ctx.TargetNode.GetLocation();
 
-        // Find ISpecification<T> implementation
+        if (ctx.TargetSymbol is not INamedTypeSymbol structSymbol)
+            return (null, location);
+
         var specInterface = structSymbol.AllInterfaces
             .FirstOrDefault(i =>
                 i.Name == "ISpecification" &&
                 i.TypeArguments.Length == 1 &&
                 i.ContainingNamespace.ToDisplayString() == "ZeroAlloc.Specification");
 
-        if (specInterface is null)
-            return null;
+        var hasInterface = specInterface is not null;
+        var candidateType = hasInterface
+            ? specInterface!.TypeArguments[0].ToDisplayString()
+            : "object";
 
-        var candidateType = specInterface.TypeArguments[0];
         var isStateless = !structSymbol.GetMembers()
             .OfType<IFieldSymbol>()
             .Any(f => !f.IsStatic);
 
-        return new SpecificationInfo(
+        var info = new SpecificationInfo(
             structSymbol.Name,
             structSymbol.ContainingNamespace.ToDisplayString(),
-            candidateType.ToDisplayString(),
+            candidateType,
             isStateless,
             structSymbol.IsReadOnly,
-            structSymbol.IsPartialDefinition());
-    }
+            structSymbol.IsPartialDefinition(),
+            hasInterface);
 
-    private static void Execute(SourceProductionContext ctx, SpecificationInfo info)
-    {
-        if (!info.IsPartial)
-            return; // Diagnostics added in Task 8
-
-        var source = GenerateSource(info);
-        ctx.AddSource($"{info.TypeName}.g.cs", SourceText.From(source, Encoding.UTF8));
+        return (info, location);
     }
 
     private static string GenerateSource(SpecificationInfo info)
@@ -104,6 +121,7 @@ internal sealed class SpecificationInfo
     public bool IsStateless { get; }
     public bool IsReadOnly { get; }
     public bool IsPartial { get; }
+    public bool HasInterface { get; }
 
     public SpecificationInfo(
         string typeName,
@@ -111,7 +129,8 @@ internal sealed class SpecificationInfo
         string candidateType,
         bool isStateless,
         bool isReadOnly,
-        bool isPartial)
+        bool isPartial,
+        bool hasInterface)
     {
         TypeName = typeName;
         Namespace = @namespace;
@@ -119,6 +138,7 @@ internal sealed class SpecificationInfo
         IsStateless = isStateless;
         IsReadOnly = isReadOnly;
         IsPartial = isPartial;
+        HasInterface = hasInterface;
     }
 
     public override bool Equals(object? obj) =>
@@ -128,7 +148,8 @@ internal sealed class SpecificationInfo
         CandidateType == other.CandidateType &&
         IsStateless == other.IsStateless &&
         IsReadOnly == other.IsReadOnly &&
-        IsPartial == other.IsPartial;
+        IsPartial == other.IsPartial &&
+        HasInterface == other.HasInterface;
 
     public override int GetHashCode()
     {
@@ -140,6 +161,7 @@ internal sealed class SpecificationInfo
             hash = (hash * 397) ^ IsStateless.GetHashCode();
             hash = (hash * 397) ^ IsReadOnly.GetHashCode();
             hash = (hash * 397) ^ IsPartial.GetHashCode();
+            hash = (hash * 397) ^ HasInterface.GetHashCode();
             return hash;
         }
     }
