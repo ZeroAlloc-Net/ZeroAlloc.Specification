@@ -161,6 +161,9 @@ internal sealed class SpecificationInfo
         Accessibility = accessibility;
     }
 
+    // NOTE: Location is intentionally excluded from equality — it does not implement value equality
+    // and including it would break incremental generator caching (causing re-runs on every keystroke).
+    // Location is available on the instance for diagnostic reporting only.
     public override bool Equals(object? obj) =>
         obj is SpecificationInfo other &&
         TypeName == other.TypeName &&
