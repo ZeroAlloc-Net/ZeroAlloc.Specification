@@ -30,7 +30,10 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
 
         // Find ISpecification<T> implementation
         var specInterface = structSymbol.AllInterfaces
-            .FirstOrDefault(i => i.Name == "ISpecification" && i.TypeArguments.Length == 1);
+            .FirstOrDefault(i =>
+                i.Name == "ISpecification" &&
+                i.TypeArguments.Length == 1 &&
+                i.ContainingNamespace.ToDisplayString() == "ZeroAlloc.Specification");
 
         if (specInterface is null)
             return null;
@@ -46,8 +49,7 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
             candidateType.ToDisplayString(),
             isStateless,
             structSymbol.IsReadOnly,
-            structSymbol.IsPartialDefinition(),
-            location: ctx.TargetNode.GetLocation());
+            structSymbol.IsPartialDefinition());
     }
 
     private static void Execute(SourceProductionContext ctx, SpecificationInfo info)
@@ -96,14 +98,20 @@ internal static class SymbolExtensions
 
 internal sealed class SpecificationInfo
 {
+    public string TypeName { get; }
+    public string Namespace { get; }
+    public string CandidateType { get; }
+    public bool IsStateless { get; }
+    public bool IsReadOnly { get; }
+    public bool IsPartial { get; }
+
     public SpecificationInfo(
         string typeName,
         string @namespace,
         string candidateType,
         bool isStateless,
         bool isReadOnly,
-        bool isPartial,
-        Location location)
+        bool isPartial)
     {
         TypeName = typeName;
         Namespace = @namespace;
@@ -111,14 +119,28 @@ internal sealed class SpecificationInfo
         IsStateless = isStateless;
         IsReadOnly = isReadOnly;
         IsPartial = isPartial;
-        Location = location;
     }
 
-    public string TypeName { get; }
-    public string Namespace { get; }
-    public string CandidateType { get; }
-    public bool IsStateless { get; }
-    public bool IsReadOnly { get; }
-    public bool IsPartial { get; }
-    public Location Location { get; }
+    public override bool Equals(object? obj) =>
+        obj is SpecificationInfo other &&
+        TypeName == other.TypeName &&
+        Namespace == other.Namespace &&
+        CandidateType == other.CandidateType &&
+        IsStateless == other.IsStateless &&
+        IsReadOnly == other.IsReadOnly &&
+        IsPartial == other.IsPartial;
+
+    public override int GetHashCode()
+    {
+        unchecked
+        {
+            var hash = TypeName?.GetHashCode() ?? 0;
+            hash = (hash * 397) ^ (Namespace?.GetHashCode() ?? 0);
+            hash = (hash * 397) ^ (CandidateType?.GetHashCode() ?? 0);
+            hash = (hash * 397) ^ IsStateless.GetHashCode();
+            hash = (hash * 397) ^ IsReadOnly.GetHashCode();
+            hash = (hash * 397) ^ IsPartial.GetHashCode();
+            return hash;
+        }
+    }
 }
