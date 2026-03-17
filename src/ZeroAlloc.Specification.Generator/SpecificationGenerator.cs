@@ -72,15 +72,10 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
             ? specInterface!.TypeArguments[0].ToDisplayString()
             : "object";
 
-        var isStateless = !structSymbol.GetMembers()
-            .OfType<IFieldSymbol>()
-            .Any(f => !f.IsStatic);
-
         return new SpecificationInfo(
             structSymbol.Name,
             structSymbol.ContainingNamespace.ToDisplayString(),
             candidateType,
-            isStateless,
             structSymbol.IsReadOnly,
             structSymbol.IsPartialDefinition(),
             hasInterface,
@@ -127,7 +122,6 @@ internal sealed class SpecificationInfo
     public string TypeName { get; }
     public string Namespace { get; }
     public string CandidateType { get; }
-    public bool IsStateless { get; }
     public bool IsReadOnly { get; }
     public bool IsPartial { get; }
     public bool HasInterface { get; }
@@ -137,7 +131,6 @@ internal sealed class SpecificationInfo
         string typeName,
         string @namespace,
         string candidateType,
-        bool isStateless,
         bool isReadOnly,
         bool isPartial,
         bool hasInterface,
@@ -146,7 +139,6 @@ internal sealed class SpecificationInfo
         TypeName = typeName;
         Namespace = @namespace;
         CandidateType = candidateType;
-        IsStateless = isStateless;
         IsReadOnly = isReadOnly;
         IsPartial = isPartial;
         HasInterface = hasInterface;
@@ -158,7 +150,6 @@ internal sealed class SpecificationInfo
         TypeName == other.TypeName &&
         Namespace == other.Namespace &&
         CandidateType == other.CandidateType &&
-        IsStateless == other.IsStateless &&
         IsReadOnly == other.IsReadOnly &&
         IsPartial == other.IsPartial &&
         HasInterface == other.HasInterface;
@@ -170,7 +161,6 @@ internal sealed class SpecificationInfo
             var hash = TypeName?.GetHashCode() ?? 0;
             hash = (hash * 397) ^ (Namespace?.GetHashCode() ?? 0);
             hash = (hash * 397) ^ (CandidateType?.GetHashCode() ?? 0);
-            hash = (hash * 397) ^ IsStateless.GetHashCode();
             hash = (hash * 397) ^ IsReadOnly.GetHashCode();
             hash = (hash * 397) ^ IsPartial.GetHashCode();
             hash = (hash * 397) ^ HasInterface.GetHashCode();
