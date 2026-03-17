@@ -72,6 +72,16 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
             ? specInterface!.TypeArguments[0].ToDisplayString()
             : "object";
 
+        var accessibility = structSymbol.DeclaredAccessibility switch
+        {
+            Accessibility.Internal => "internal",
+            Accessibility.Private => "private",
+            Accessibility.Protected => "protected",
+            Accessibility.ProtectedOrInternal => "protected internal",
+            Accessibility.ProtectedAndInternal => "private protected",
+            _ => "public"
+        };
+
         return new SpecificationInfo(
             structSymbol.Name,
             structSymbol.ContainingNamespace.ToDisplayString(),
@@ -79,7 +89,8 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
             structSymbol.IsReadOnly,
             structSymbol.IsPartialDefinition(),
             hasInterface,
-            location);
+            location,
+            accessibility);
     }
 
     private static string GenerateSource(SpecificationInfo info)
@@ -88,12 +99,14 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
         var type = info.TypeName;
         var t = info.CandidateType;
 
+        var accessibility = info.Accessibility;
+
         return $$"""
             using ZeroAlloc.Specification;
 
             namespace {{ns}}
             {
-                public partial struct {{type}}
+                {{accessibility}} partial struct {{type}}
                 {
                     public AndSpecification<{{type}}, TOther, {{t}}> And<TOther>(TOther other)
                         where TOther : struct, ISpecification<{{t}}> => new(this, other);
@@ -126,6 +139,7 @@ internal sealed class SpecificationInfo
     public bool IsPartial { get; }
     public bool HasInterface { get; }
     public Location Location { get; }
+    public string Accessibility { get; }
 
     public SpecificationInfo(
         string typeName,
@@ -134,7 +148,8 @@ internal sealed class SpecificationInfo
         bool isReadOnly,
         bool isPartial,
         bool hasInterface,
-        Location location)
+        Location location,
+        string accessibility = "public")
     {
         TypeName = typeName;
         Namespace = @namespace;
@@ -143,6 +158,7 @@ internal sealed class SpecificationInfo
         IsPartial = isPartial;
         HasInterface = hasInterface;
         Location = location;
+        Accessibility = accessibility;
     }
 
     public override bool Equals(object? obj) =>
@@ -152,7 +168,8 @@ internal sealed class SpecificationInfo
         CandidateType == other.CandidateType &&
         IsReadOnly == other.IsReadOnly &&
         IsPartial == other.IsPartial &&
-        HasInterface == other.HasInterface;
+        HasInterface == other.HasInterface &&
+        Accessibility == other.Accessibility;
 
     public override int GetHashCode()
     {
@@ -164,6 +181,7 @@ internal sealed class SpecificationInfo
             hash = (hash * 397) ^ IsReadOnly.GetHashCode();
             hash = (hash * 397) ^ IsPartial.GetHashCode();
             hash = (hash * 397) ^ HasInterface.GetHashCode();
+            hash = (hash * 397) ^ (Accessibility?.GetHashCode() ?? 0);
             return hash;
         }
     }

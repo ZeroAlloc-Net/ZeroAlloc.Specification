@@ -9,7 +9,7 @@ using ZeroAlloc.Specification;
 namespace ZeroAlloc.Specification.Tests.Integration;
 
 // Domain model
-public class Product
+internal class Product
 {
     public int Id { get; set; }
     public string Name { get; set; } = "";
@@ -18,7 +18,7 @@ public class Product
 }
 
 // DbContext
-public class TestDbContext : DbContext
+internal class TestDbContext : DbContext
 {
     public DbSet<Product> Products => Set<Product>();
 
@@ -27,14 +27,14 @@ public class TestDbContext : DbContext
 
 // Specifications under test — attributed partial structs, generator emits And/Or/Not
 [Specification]
-public readonly partial struct ActiveProductSpec : ISpecification<Product>
+internal readonly partial struct ActiveProductSpec : ISpecification<Product>
 {
     public bool IsSatisfiedBy(Product p) => p.IsActive;
     public Expression<Func<Product, bool>> ToExpression() => p => p.IsActive;
 }
 
 [Specification]
-public readonly partial struct PriceAboveSpec : ISpecification<Product>
+internal readonly partial struct PriceAboveSpec : ISpecification<Product>
 {
     private readonly decimal _min;
     public PriceAboveSpec(decimal min) => _min = min;
@@ -97,7 +97,9 @@ public class EfCoreQueryTests : IDisposable
     {
         var spec = new ActiveProductSpec().Or(new PriceAboveSpec(100m));
         var results = _db.Products.Where(spec.ToExpression()).ToList();
+        // Id=1 (active), Id=2 (active+high price), Id=4 (inactive+high price)
         results.Should().HaveCount(3);
+        results.Should().OnlyContain(p => p.IsActive || p.Price > 100m);
     }
 
     [Fact]
