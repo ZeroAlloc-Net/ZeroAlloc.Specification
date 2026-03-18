@@ -11,13 +11,13 @@ sidebar_position: 2
 
 ```csharp
 // AND: user must be active AND spend >= 1000
-var spec = new ActiveUserSpec().And(new PremiumUserSpec(1000m));
+var andSpec = new ActiveUserSpec().And(new PremiumUserSpec(1000m));
 
 // OR: user is active OR is an admin
-var spec = new ActiveUserSpec().Or(new AdminUserSpec());
+var orSpec = new ActiveUserSpec().Or(new AdminUserSpec());
 
 // NOT: user is not active
-var spec = new ActiveUserSpec().Not();
+var notSpec = new ActiveUserSpec().Not();
 ```
 
 ## Chaining
