@@ -68,4 +68,13 @@ public class OrSpecificationTests
         compiled(200).Should().BeTrue();
         compiled(50).Should().BeFalse();
     }
+
+    [Fact]
+    public void ImplicitConversion_ReturnsExpression()
+    {
+        var spec = new OrSpecification<GT0Spec, NegativeSpec, int>(new GT0Spec(), new NegativeSpec());
+        Expression<Func<int, bool>> expr = spec; // implicit conversion
+        expr.Should().NotBeNull();
+        expr.Compile()(42).Should().BeTrue();
+    }
 }

@@ -40,4 +40,7 @@ public readonly struct OrSpecification<TLeft, TRight, T> : ISpecification<T>
         var rightBody = ParameterRebinder.ReplaceParameter(right.Body, right.Parameters[0], param);
         return Expression.Lambda<Func<T, bool>>(Expression.OrElse(left.Body, rightBody), param);
     }
+
+    public static implicit operator Expression<Func<T, bool>>(OrSpecification<TLeft, TRight, T> spec)
+        => spec.ToExpression();
 }

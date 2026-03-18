@@ -29,4 +29,13 @@ public class NotSpecificationTests
         compiled(3).Should().BeTrue();
         compiled(4).Should().BeFalse();
     }
+
+    [Fact]
+    public void ImplicitConversion_ReturnsExpression()
+    {
+        var spec = new NotSpecification<EvenSpec, int>(new EvenSpec());
+        Expression<Func<int, bool>> expr = spec; // implicit conversion
+        expr.Should().NotBeNull();
+        expr.Compile()(42).Should().BeFalse();
+    }
 }
