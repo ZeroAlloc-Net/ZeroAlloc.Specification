@@ -2,7 +2,14 @@
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PackageId>ZeroAlloc.Specification</PackageId>
+    <Version>0.1.0</Version>
+    <Description>Source-generated, zero-allocation specification pattern for .NET 8+. Compose predicates as structs — no heap allocations, EF Core compatible.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ZeroAlloc.Specification.Generator\ZeroAlloc.Specification.Generator.csproj"
                       OutputItemType="Analyzer" ReferenceOutputAssembly="false" />

@@ -2,6 +2,9 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <PackageId>ZeroAlloc.Specification.Generator</PackageId>
+    <Version>0.1.0</Version>
+    <Description>Roslyn source generator for ZeroAlloc.Specification. Emits And/Or/Not fluent methods on [Specification]-attributed structs at compile time.</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.9.2" PrivateAssets="all" />
@@ -10,5 +13,9 @@
   <ItemGroup>
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true"
+          PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 </Project>
