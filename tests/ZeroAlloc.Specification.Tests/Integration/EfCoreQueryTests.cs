@@ -69,7 +69,7 @@ public class EfCoreQueryTests : IDisposable
     public void ActiveProductSpec_TranslatesToQuery()
     {
         var spec = new ActiveProductSpec();
-        var results = _db.Products.Where(spec.ToExpression()).ToList();
+        var results = _db.Products.Where(spec).ToList();
         results.Should().HaveCount(2);
         results.Should().OnlyContain(p => p.IsActive);
     }
@@ -78,7 +78,7 @@ public class EfCoreQueryTests : IDisposable
     public void PriceAboveSpec_TranslatesToQuery()
     {
         var spec = new PriceAboveSpec(100m);
-        var results = _db.Products.Where(spec.ToExpression()).ToList();
+        var results = _db.Products.Where(spec).ToList();
         results.Should().HaveCount(2);
         results.Should().OnlyContain(p => p.Price > 100m);
     }
@@ -87,7 +87,7 @@ public class EfCoreQueryTests : IDisposable
     public void AndComposition_TranslatesToQuery()
     {
         var spec = new ActiveProductSpec().And(new PriceAboveSpec(100m));
-        var results = _db.Products.Where(spec.ToExpression()).ToList();
+        var results = _db.Products.Where(spec).ToList();
         results.Should().HaveCount(1);
         results[0].Id.Should().Be(2);
     }
@@ -96,7 +96,7 @@ public class EfCoreQueryTests : IDisposable
     public void OrComposition_TranslatesToQuery()
     {
         var spec = new ActiveProductSpec().Or(new PriceAboveSpec(100m));
-        var results = _db.Products.Where(spec.ToExpression()).ToList();
+        var results = _db.Products.Where(spec).ToList();
         // Id=1 (active), Id=2 (active+high price), Id=4 (inactive+high price)
         results.Should().HaveCount(3);
         results.Should().OnlyContain(p => p.IsActive || p.Price > 100m);
@@ -106,7 +106,7 @@ public class EfCoreQueryTests : IDisposable
     public void NotComposition_TranslatesToQuery()
     {
         var spec = new ActiveProductSpec().Not();
-        var results = _db.Products.Where(spec.ToExpression()).ToList();
+        var results = _db.Products.Where(spec).ToList();
         results.Should().HaveCount(2);
         results.Should().OnlyContain(p => !p.IsActive);
     }
