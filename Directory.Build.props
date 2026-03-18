@@ -14,5 +14,6 @@
     <PackageTags>specification;ddd;source-generator;zero-allocation;efcore</PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
 </Project>
