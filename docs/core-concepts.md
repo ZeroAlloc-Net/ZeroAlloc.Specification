@@ -106,8 +106,12 @@ public readonly struct AndSpecification<TLeft, TRight, T> : ISpecification<T>
     where TLeft : struct, ISpecification<T>
     where TRight : struct, ISpecification<T>;
 
-public readonly struct OrSpecification<TLeft, TRight, T> : ISpecification<T>;
-public readonly struct NotSpecification<TInner, T> : ISpecification<T>;
+public readonly struct OrSpecification<TLeft, TRight, T> : ISpecification<T>
+    where TLeft : struct, ISpecification<T>
+    where TRight : struct, ISpecification<T>;
+
+public readonly struct NotSpecification<TInner, T> : ISpecification<T>
+    where TInner : struct, ISpecification<T>;
 ```
 
 These are hand-written and reused for all compositions. The generator does not emit new combinator types — it only adds fluent methods that construct instances of these combinators.
