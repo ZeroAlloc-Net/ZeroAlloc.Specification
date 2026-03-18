@@ -29,4 +29,7 @@ public readonly struct NotSpecification<TInner, T> : ISpecification<T>
         var param = inner.Parameters[0];
         return Expression.Lambda<Func<T, bool>>(Expression.Not(inner.Body), param);
     }
+
+    public static implicit operator Expression<Func<T, bool>>(NotSpecification<TInner, T> spec)
+        => spec.ToExpression();
 }
