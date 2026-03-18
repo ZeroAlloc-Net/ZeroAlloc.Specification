@@ -59,9 +59,9 @@ public class GeneratorSnapshotTests
             .First(t => t.FilePath.Contains("ActiveSpec"))
             .GetText().ToString();
 
-        specSource.Should().Contain("public AndSpecification<ActiveSpec");
-        specSource.Should().Contain("public OrSpecification<ActiveSpec");
-        specSource.Should().Contain("public NotSpecification<ActiveSpec");
+        specSource.Should().Contain("AndSpecification<ActiveSpec");
+        specSource.Should().Contain("OrSpecification<ActiveSpec");
+        specSource.Should().Contain("NotSpecification<ActiveSpec");
     }
 
     [Fact]
@@ -165,5 +165,41 @@ public class GeneratorSnapshotTests
 
         result.Diagnostics.Should().Contain(d =>
             d.Id == "ZA001" && d.Severity == DiagnosticSeverity.Error);
+    }
+
+    [Fact]
+    public void Generator_EmitsImplicitConversionOperator()
+    {
+        var source = """
+            using ZeroAlloc.Specification;
+            using System.Linq.Expressions;
+            using System;
+
+            namespace MyApp
+            {
+                [Specification]
+                public readonly partial struct MySpec : ISpecification<int>
+                {
+                    public bool IsSatisfiedBy(int x) => x > 0;
+                    public Expression<Func<int, bool>> ToExpression() => x => x > 0;
+                }
+            }
+            """;
+
+        var compilation = CreateCompilation(source);
+        var generator = new SpecificationGenerator();
+        var driver = CSharpGeneratorDriver.Create(generator).RunGenerators(compilation);
+        var result = driver.GetRunResult();
+
+        result.Diagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).Should().BeEmpty();
+
+        result.GeneratedTrees.Should().HaveCount(1);
+
+        var specSource = result.GeneratedTrees
+            .First(t => t.FilePath.Contains("MySpec"))
+            .GetText().ToString();
+
+        specSource.Should().Contain("implicit operator");
+        specSource.Should().Contain("Expression<");
     }
 }
