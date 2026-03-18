@@ -49,4 +49,19 @@ public class AndSpecificationTests
         compiled(-1).Should().BeFalse();
         compiled(15).Should().BeFalse();
     }
+
+    private readonly struct TrueSpec : ISpecification<int>
+    {
+        public bool IsSatisfiedBy(int x) => true;
+        public Expression<Func<int, bool>> ToExpression() => x => true;
+    }
+
+    [Fact]
+    public void ImplicitConversion_ReturnsExpression()
+    {
+        var spec = new AndSpecification<TrueSpec, TrueSpec, int>(new TrueSpec(), new TrueSpec());
+        Expression<Func<int, bool>> expr = spec; // implicit conversion
+        expr.Should().NotBeNull();
+        expr.Compile()(42).Should().BeTrue();
+    }
 }
