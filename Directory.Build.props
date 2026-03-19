@@ -8,7 +8,7 @@
     <Company>ZeroAlloc-Net</Company>
     <Copyright>Copyright © 2026 ZeroAlloc-Net</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification</PackageProjectUrl>
+    <PackageProjectUrl>https://specification.zeroalloc.net</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>specification;ddd;source-generator;zero-allocation;efcore</PackageTags>
