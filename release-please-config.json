@@ -1,16 +1,10 @@
 {
-  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
-  "release-type": "simple",
   "packages": {
-    "src/ZeroAlloc.Specification": {
+    ".": {
       "release-type": "simple",
-      "package-name": "ZeroAlloc.Specification",
-      "changelog-path": "CHANGELOG.md"
-    },
-    "src/ZeroAlloc.Specification.Generator": {
-      "release-type": "simple",
-      "package-name": "ZeroAlloc.Specification.Generator",
-      "changelog-path": "CHANGELOG.md"
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true
     }
-  }
+  },
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
 }
