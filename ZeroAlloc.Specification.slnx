@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ZeroAlloc.Specification/ZeroAlloc.Specification.csproj" />
+    <Project Path="src/ZeroAlloc.Specification.Generator/ZeroAlloc.Specification.Generator.csproj" />
+  </Folder>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/ZeroAlloc.Specification.Benchmarks/ZeroAlloc.Specification.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/samples/">
+    <Project Path="samples/ZeroAlloc.Specification.AotSmoke/ZeroAlloc.Specification.AotSmoke.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ZeroAlloc.Specification.Tests/ZeroAlloc.Specification.Tests.csproj" />
+  </Folder>
+</Solution>
