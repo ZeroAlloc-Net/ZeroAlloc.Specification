@@ -45,3 +45,18 @@ See [Stateless Caching](cookbook/stateless-caching).
 
 - Use `IsSatisfiedBy` in hot loops (pure struct evaluation, zero allocation)
 - Call `ToExpression()` once and cache for ORM queries (expression tree is allocated but reused)
+
+## Benchmark
+
+The [benchmarks/ZeroAlloc.Specification.Benchmarks](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/tree/main/benchmarks/ZeroAlloc.Specification.Benchmarks) project contains `SpecVsFuncBenchmark` — a head-to-head comparing `AndSpecification` struct composition against a `Func<T, bool>` pipeline of lambdas.
+
+Why this pairing: `Func<T, bool>` is the idiomatic C# alternative to struct specifications. Every lambda capturing outer state is a heap allocation, so composing `positive && even` via `Func` allocates roughly one closure per captured predicate plus one for the composed result. The struct path allocates none — the `AndSpecification<TLeft, TRight, T>` value lives on the stack.
+
+```bash
+dotnet run --project benchmarks/ZeroAlloc.Specification.Benchmarks -c Release --filter "*"
+```
+
+What to watch:
+
+- **Allocated column**: the `Specification struct composed` row must read `0 B/op`. The `Func<int, bool> composed` row allocates the three lambda captures each iteration
+- **Ratio column**: struct inlining typically makes the struct path several times faster than delegate invocation for simple predicates, with the gap widening as the composition depth grows
