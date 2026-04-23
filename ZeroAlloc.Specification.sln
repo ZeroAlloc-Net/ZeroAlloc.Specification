@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroAlloc.Specification.Tests", "tests\ZeroAlloc.Specification.Tests\ZeroAlloc.Specification.Tests.csproj", "{EA42C3C5-28A3-4005-BA58-60FED4D77E55}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{B1E2CFD3-0000-4000-8000-000000000001}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZeroAlloc.Specification.Benchmarks", "benchmarks\ZeroAlloc.Specification.Benchmarks\ZeroAlloc.Specification.Benchmarks.csproj", "{B1E2CFD3-0000-4000-8000-000000000002}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +63,18 @@ Global
 		{EA42C3C5-28A3-4005-BA58-60FED4D77E55}.Release|x64.Build.0 = Release|Any CPU
 		{EA42C3C5-28A3-4005-BA58-60FED4D77E55}.Release|x86.ActiveCfg = Release|Any CPU
 		{EA42C3C5-28A3-4005-BA58-60FED4D77E55}.Release|x86.Build.0 = Release|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Debug|x64.Build.0 = Debug|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Debug|x86.Build.0 = Debug|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Release|x64.ActiveCfg = Release|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Release|x64.Build.0 = Release|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Release|x86.ActiveCfg = Release|Any CPU
+		{B1E2CFD3-0000-4000-8000-000000000002}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -67,5 +83,6 @@ Global
 		{4D9B0C7B-E72F-438D-A205-F649B2C128F3} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{441805ED-6B35-48D0-97CE-5A4F96E071E6} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{EA42C3C5-28A3-4005-BA58-60FED4D77E55} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{B1E2CFD3-0000-4000-8000-000000000002} = {B1E2CFD3-0000-4000-8000-000000000001}
 	EndGlobalSection
 EndGlobal
