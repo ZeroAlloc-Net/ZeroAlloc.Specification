@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v0.3.0...ZeroAlloc.Specification-v1.0.0) (2026-04-28)
+
+
+### Miscellaneous Chores
+
+* **release:** promote to 1.0.0 stability milestone ([7ca3836](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/7ca38369d9317c85deac605334adbf68243f00ec))
+
 ## 1.0.0
 
 Stability milestone — public API of `ZeroAlloc.Specification` is now considered stable. No code changes from 0.3.0; this release marks the transition out of pre-1.0 SemVer.
