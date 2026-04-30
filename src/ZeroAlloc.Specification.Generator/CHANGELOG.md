@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification.Generator-v1.0.0...ZeroAlloc.Specification.Generator-v1.0.1) (2026-04-30)
+
+
+### Bug Fixes
+
+* suppress duplicate generator DLL under lib/ ([c787ba4](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/c787ba46f78f68d688369c064357b187e0e4a7b5))
+* suppress duplicate generator DLL under lib/ ([878f05e](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/878f05e6c2379d81c27efbd4c1e4af1465e958f9))
+
 ## [1.0.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification.Generator-v0.3.0...ZeroAlloc.Specification.Generator-v1.0.0) (2026-04-28)
 
 
