@@ -12,10 +12,13 @@ Multiple packages in this family — see [Documentation](docs/) or NuGet for the
 
 ## Install
 
+The source generator is bundled into the main package — a single `PackageReference` is all you need:
+
 ```bash
 dotnet add package ZeroAlloc.Specification
-dotnet add package ZeroAlloc.Specification.Generator
 ```
+
+> The standalone `ZeroAlloc.Specification.Generator` package is still published for backwards compatibility with existing direct PackageReferences, but new consumers should reference only `ZeroAlloc.Specification`.
 
 ## Example
 

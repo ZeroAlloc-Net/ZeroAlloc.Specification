@@ -11,8 +11,24 @@
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\assets\icon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+  <!--
+    Bundle the source generator into the NuGet package so consumers get it by
+    referencing only ZeroAlloc.Specification. The standalone
+    ZeroAlloc.Specification.Generator package is still published for backwards
+    compatibility, but new consumers should reference the main package only.
+  -->
   <ItemGroup>
     <ProjectReference Include="..\ZeroAlloc.Specification.Generator\ZeroAlloc.Specification.Generator.csproj"
-                      OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"
+                      PrivateAssets="all" />
   </ItemGroup>
+  <Target Name="IncludeGeneratorInPackage" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="$(MSBuildThisFileDirectory)..\ZeroAlloc.Specification.Generator\bin\$(Configuration)\netstandard2.0\ZeroAlloc.Specification.Generator.dll"
+            Pack="true"
+            PackagePath="analyzers/dotnet/cs"
+            Visible="false" />
+    </ItemGroup>
+  </Target>
 </Project>
