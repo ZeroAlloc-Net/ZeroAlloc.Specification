@@ -2,6 +2,7 @@
   <PropertyGroup>
     <Nullable>enable</Nullable>
     <LangVersion>12</LangVersion>
+    <WarningsAsErrors>$(WarningsAsErrors);RS0016;RS0017</WarningsAsErrors>
 
     <!-- NuGet metadata (shared) -->
     <Authors>ZeroAlloc-Net</Authors>
