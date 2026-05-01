@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.1.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.0.0...ZeroAlloc.Specification-v1.1.0) (2026-05-01)
+
+
+### Features
+
+* bundle source generator into ZeroAlloc.Specification package ([61a1ad9](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/61a1ad9e6d6366eea4c685ebb7e3ccd4bcc528f7))
+* bundle source generator into ZeroAlloc.Specification package ([1f58e5d](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/1f58e5db6951e6d32c1dfcfbe8da515bdc1fad0d))
+* lock public API surface (PublicApiAnalyzers + api-compat gate) ([#26](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/26)) ([b42c78a](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/b42c78ae3610f16eb344a36fe0eaea7a9e73a6cf))
+
 ## [1.0.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v0.3.0...ZeroAlloc.Specification-v1.0.0) (2026-04-28)
 
 
