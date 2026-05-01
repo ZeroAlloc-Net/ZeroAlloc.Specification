@@ -1,1 +1,28 @@
 #nullable enable
+ZeroAlloc.Specification.AndSpecification<TLeft, TRight, T>
+ZeroAlloc.Specification.AndSpecification<TLeft, TRight, T>.AndSpecification() -> void
+ZeroAlloc.Specification.AndSpecification<TLeft, TRight, T>.AndSpecification(TLeft left, TRight right) -> void
+ZeroAlloc.Specification.AndSpecification<TLeft, TRight, T>.IsSatisfiedBy(T candidate) -> bool
+ZeroAlloc.Specification.AndSpecification<TLeft, TRight, T>.ToExpression() -> System.Linq.Expressions.Expression<System.Func<T, bool>!>!
+ZeroAlloc.Specification.ISpecification<T>
+ZeroAlloc.Specification.ISpecification<T>.IsSatisfiedBy(T candidate) -> bool
+ZeroAlloc.Specification.ISpecification<T>.ToExpression() -> System.Linq.Expressions.Expression<System.Func<T, bool>!>!
+ZeroAlloc.Specification.NotSpecification<TInner, T>
+ZeroAlloc.Specification.NotSpecification<TInner, T>.IsSatisfiedBy(T candidate) -> bool
+ZeroAlloc.Specification.NotSpecification<TInner, T>.NotSpecification() -> void
+ZeroAlloc.Specification.NotSpecification<TInner, T>.NotSpecification(TInner inner) -> void
+ZeroAlloc.Specification.NotSpecification<TInner, T>.ToExpression() -> System.Linq.Expressions.Expression<System.Func<T, bool>!>!
+ZeroAlloc.Specification.OrSpecification<TLeft, TRight, T>
+ZeroAlloc.Specification.OrSpecification<TLeft, TRight, T>.IsSatisfiedBy(T candidate) -> bool
+ZeroAlloc.Specification.OrSpecification<TLeft, TRight, T>.OrSpecification() -> void
+ZeroAlloc.Specification.OrSpecification<TLeft, TRight, T>.OrSpecification(TLeft left, TRight right) -> void
+ZeroAlloc.Specification.OrSpecification<TLeft, TRight, T>.ToExpression() -> System.Linq.Expressions.Expression<System.Func<T, bool>!>!
+ZeroAlloc.Specification.Spec
+ZeroAlloc.Specification.SpecificationAttribute
+ZeroAlloc.Specification.SpecificationAttribute.SpecificationAttribute() -> void
+static ZeroAlloc.Specification.AndSpecification<TLeft, TRight, T>.implicit operator System.Linq.Expressions.Expression<System.Func<T, bool>!>!(ZeroAlloc.Specification.AndSpecification<TLeft, TRight, T> spec) -> System.Linq.Expressions.Expression<System.Func<T, bool>!>!
+static ZeroAlloc.Specification.NotSpecification<TInner, T>.implicit operator System.Linq.Expressions.Expression<System.Func<T, bool>!>!(ZeroAlloc.Specification.NotSpecification<TInner, T> spec) -> System.Linq.Expressions.Expression<System.Func<T, bool>!>!
+static ZeroAlloc.Specification.OrSpecification<TLeft, TRight, T>.implicit operator System.Linq.Expressions.Expression<System.Func<T, bool>!>!(ZeroAlloc.Specification.OrSpecification<TLeft, TRight, T> spec) -> System.Linq.Expressions.Expression<System.Func<T, bool>!>!
+static ZeroAlloc.Specification.Spec.And<TLeft, TRight, T>(TLeft left, TRight right) -> ZeroAlloc.Specification.AndSpecification<TLeft, TRight, T>
+static ZeroAlloc.Specification.Spec.Not<TInner, T>(TInner inner) -> ZeroAlloc.Specification.NotSpecification<TInner, T>
+static ZeroAlloc.Specification.Spec.Or<TLeft, TRight, T>(TLeft left, TRight right) -> ZeroAlloc.Specification.OrSpecification<TLeft, TRight, T>
