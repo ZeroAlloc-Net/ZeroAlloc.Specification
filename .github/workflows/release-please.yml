@@ -14,47 +14,72 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
-      version: ${{ steps.release.outputs.version }}
+      paths_released: ${{ steps.release.outputs.paths_released }}
     steps:
-      - uses: googleapis/release-please-action@v4
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
+          # Manifest mode: read release-please-config.json + .release-please-manifest.json
+          # from the repo root. Multiple components (Specification + Specification.Generator)
+          # versioned independently — paths_released drives the publish job.
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+          token: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
     needs: release-please
-    if: needs.release-please.outputs.releases_created == 'true'
+    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
           fetch-depth: 0
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: 10.0.x
 
       - name: Restore tools
         run: dotnet tool restore
 
+      - name: Restore
+        run: dotnet restore
+
       - name: Build
-        run: dotnet build --configuration Release -p:Version=${{ needs.release-please.outputs.version }}
+        run: dotnet build --configuration Release --no-restore
 
       - name: Test
         run: dotnet test --configuration Release --no-build --verbosity normal
 
-      - name: Pack ZeroAlloc.Specification
-        run: dotnet pack src/ZeroAlloc.Specification/ZeroAlloc.Specification.csproj --configuration Release --no-build --output ./artifacts -p:Version=${{ needs.release-please.outputs.version }}
-
-      - name: Pack ZeroAlloc.Specification.Generator
-        run: dotnet pack src/ZeroAlloc.Specification.Generator/ZeroAlloc.Specification.Generator.csproj --configuration Release --no-build --output ./artifacts -p:Version=${{ needs.release-please.outputs.version }}
+      - name: Pack each released package at its manifest version
+        env:
+          PATHS_RELEASED: ${{ needs.release-please.outputs.paths_released }}
+        run: |
+          mkdir -p ./artifacts
+          # paths_released is a JSON array of paths whose components got bumped this run.
+          # The post-merge state of .release-please-manifest.json holds the new version
+          # per path, so look it up there. version.txt is NOT used (release-please's
+          # 'simple' strategy could create one, but reading the manifest is canonical and
+          # avoids depending on a side-effect file that may not exist).
+          for path in $(echo "$PATHS_RELEASED" | jq -r '.[]'); do
+            version=$(jq -r --arg p "$path" '.[$p]' .release-please-manifest.json)
+            csproj=$(ls "$path"/*.csproj | head -1)
+            echo "Packing $csproj at version $version (from manifest)"
+            dotnet pack "$csproj" --configuration Release --no-build \
+              -p:PackageVersion="$version" -p:Version="$version" -o ./artifacts
+          done
+          ls -la ./artifacts
 
       - name: Push to NuGet
-        run: dotnet nuget push ./artifacts/*.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --skip-duplicate
 
       - name: Push to GitHub Packages
-        run: dotnet nuget push ./artifacts/*.nupkg --source https://nuget.pkg.github.com/ZeroAlloc-Net/index.json --api-key ${{ secrets.GITHUB_TOKEN }} --skip-duplicate
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg \
+            --source https://nuget.pkg.github.com/ZeroAlloc-Net/index.json \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --skip-duplicate

@@ -1,0 +1,64 @@
+name: Publish from manifest
+
+# Manually-triggered rescue workflow that packs and pushes each component to
+# NuGet at the version recorded in .release-please-manifest.json. Designed for
+# the case where release-please created GitHub releases / tags but the publish
+# job failed before pushing to NuGet (so manifest is ahead of the package feed).
+# --skip-duplicate makes re-runs safe.
+#
+# Usage:  gh workflow run publish-from-manifest.yml --repo ZeroAlloc-Net/ZeroAlloc.Specification
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test --configuration Release --no-build --verbosity normal
+
+      - name: Pack each component at manifest version
+        run: |
+          mkdir -p ./artifacts
+          # Walk every path in the release-please manifest and pack at the recorded version.
+          jq -r 'to_entries[] | "\(.key) \(.value)"' .release-please-manifest.json | \
+            while read path version; do
+              csproj=$(ls "$path"/*.csproj | head -1)
+              echo "Packing $csproj at version $version"
+              dotnet pack "$csproj" --configuration Release --no-build \
+                -p:PackageVersion="$version" -p:Version="$version" -o ./artifacts
+            done
+          ls -la ./artifacts
+
+      - name: Push to NuGet
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --skip-duplicate
+
+      - name: Push to GitHub Packages
+        run: |
+          dotnet nuget push ./artifacts/*.nupkg \
+            --source https://nuget.pkg.github.com/ZeroAlloc-Net/index.json \
+            --api-key ${{ secrets.GITHUB_TOKEN }} \
+            --skip-duplicate
