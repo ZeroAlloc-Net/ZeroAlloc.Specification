@@ -54,6 +54,20 @@ bool result = spec.IsSatisfiedBy(user);
 var users = await dbContext.Users.Where(spec.ToExpression()).ToListAsync();
 ```
 
+## Performance
+
+Head-to-head vs **Ardalis.Specification** 8.0 (the de-facto specification library in .NET). .NET 10.0.7, i9-12900HK, BenchmarkDotNet v0.15.4.
+
+| Operation | Ardalis.Specification | ZA.Specification | Speedup |
+|---|---:|---:|---:|
+| Construct composed spec | 1,719 ns / 1,248 B | **40 ns / 24 B** | **43× faster, 52× less alloc** |
+| Compose two specs | 3,959 ns / 2,648 B | **22 ns / 24 B** | **180× faster, 110× less alloc** |
+| Evaluate over 100 items (in-memory) | 170,862 ns / 4,688 B | **150 ns / 0 B** | **1,136× faster, 0 B alloc** |
+
+The in-memory-evaluation gap is dramatic because Ardalis pays `Expression.Compile()` per call. For EF Core / database queries the SQL provider dominates and the overhead is invisible; for in-memory filtering it dominates.
+
+Full methodology + analysis: [docs/performance.md](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/blob/main/docs/performance.md).
+
 ## Features
 
 - **Zero allocations** — composed specs are `readonly struct` values, not heap objects
