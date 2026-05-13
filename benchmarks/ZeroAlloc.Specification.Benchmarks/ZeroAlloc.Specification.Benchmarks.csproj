@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.15.4" />
+    <PackageReference Include="Ardalis.Specification" Version="8.0.0" />
 
     <ProjectReference Include="..\..\src\ZeroAlloc.Specification\ZeroAlloc.Specification.csproj" />
     <ProjectReference Include="..\..\src\ZeroAlloc.Specification.Generator\ZeroAlloc.Specification.Generator.csproj"

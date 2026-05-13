@@ -46,9 +46,27 @@ See [Stateless Caching](cookbook/stateless-caching).
 - Use `IsSatisfiedBy` in hot loops (pure struct evaluation, zero allocation)
 - Call `ToExpression()` once and cache for ORM queries (expression tree is allocated but reused)
 
-## Benchmark
+## Head-to-head vs Ardalis.Specification
 
-The [benchmarks/ZeroAlloc.Specification.Benchmarks](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/tree/main/benchmarks/ZeroAlloc.Specification.Benchmarks) project contains `SpecVsFuncBenchmark` — a head-to-head comparing `AndSpecification` struct composition against a `Func<T, bool>` pipeline of lambdas.
+<!-- BENCH:START -->
+_Last refreshed: 2026-05-13_
+
+Ardalis.Specification is the most-used specification library in .NET — class-based, designed for EF Core query composition. ZA.Specification's struct-based design pays off across every operation that exercises both libraries' core surface.
+
+| Operation | Ardalis.Specification | ZA.Specification | Speedup |
+|---|---:|---:|---:|
+| Construct composed spec | 1,719 ns / 1,248 B | **40 ns / 24 B** | **43× faster, 52× less alloc** |
+| Compose two specs | 3,959 ns / 2,648 B | **22 ns / 24 B** | **180× faster, 110× less alloc** |
+| Evaluate over 100 items (in-memory) | 170,862 ns / 4,688 B | **150 ns / 0 B** | **1,136× faster, ∞× less alloc** |
+
+The in-memory-evaluation gap is dramatic because Ardalis is designed for **IQueryable composition** — `WhereExpression.Filter.Compile()` is hundreds of microseconds per call. For EF Core / database queries where the SQL provider dominates the cost, this overhead is invisible. For in-memory filtering (which many users do), it dominates.
+
+ZA.Specification's `IsSatisfiedBy` is a direct virtual call on a struct value — the JIT inlines it, the composition tree resolves to a sequence of `&&` operators in straight-line code. Zero allocation per evaluation regardless of composition depth.
+<!-- BENCH:END -->
+
+## Vs `Func<T, bool>` (no library)
+
+The [benchmarks/ZeroAlloc.Specification.Benchmarks](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/tree/main/benchmarks/ZeroAlloc.Specification.Benchmarks) project also contains `SpecVsFuncBenchmark` — a head-to-head comparing `AndSpecification` struct composition against a `Func<T, bool>` pipeline of lambdas.
 
 Why this pairing: `Func<T, bool>` is the idiomatic C# alternative to struct specifications. Every lambda capturing outer state is a heap allocation, so composing `positive && even` via `Func` allocates roughly one closure per captured predicate plus one for the composed result. The struct path allocates none — the `AndSpecification<TLeft, TRight, T>` value lives on the stack.
 
