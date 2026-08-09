@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using FluentAssertions;
+using AwesomeAssertions;
 using Xunit;
 using ZeroAlloc.Specification;
 
