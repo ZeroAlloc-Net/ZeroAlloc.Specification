@@ -16,5 +16,8 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PackageIcon>icon.png</PackageIcon>
-  </PropertyGroup>
+      <!-- Warnings are errors here as they are across the rest of the org. Without this a
+         build could accumulate warnings indefinitely and nothing would say so. -->
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+</PropertyGroup>
 </Project>
