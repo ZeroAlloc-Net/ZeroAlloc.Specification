@@ -49,8 +49,8 @@ jobs:
               # stamped once up front; packing must rebuild the project at its own version
               # or the assembly keeps a fallback while the package claims the real one.
               # See ZeroAlloc-Net/.github#26.
-              dotnet pack "$csproj" -c Release \
-                -p:Version="$version" -o ./nupkg
+              dotnet pack "$csproj" --configuration Release \
+                -p:PackageVersion="$version" -p:Version="$version" -o ./artifacts
             done
           ls -la ./artifacts
 
