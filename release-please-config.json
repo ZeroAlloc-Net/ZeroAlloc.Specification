@@ -5,7 +5,12 @@
     ".": {
       "release-type": "simple",
       "package-name": "ZeroAlloc.Specification",
-      "changelog-path": "CHANGELOG.md"
+      "changelog-path": "CHANGELOG.md",
+      "exclude-paths": [
+        "tests",
+        "samples",
+        "benchmarks"
+      ]
     },
     "src/ZeroAlloc.Specification.Generator": {
       "release-type": "simple",
