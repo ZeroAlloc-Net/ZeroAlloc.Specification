@@ -14,14 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       releases_created: ${{ steps.release.outputs.releases_created }}
-      paths_released: ${{ steps.release.outputs.paths_released }}
+      version: ${{ steps.release.outputs.version }}
     steps:
       - uses: googleapis/release-please-action@v5
         id: release
         with:
           # Manifest mode: read release-please-config.json + .release-please-manifest.json
           # from the repo root. Multiple components (Specification + Specification.Generator)
-          # versioned independently — paths_released drives the publish job. The root
+          # released as one version — releases_created drives the publish job. The root
           # component "." is ZeroAlloc.Specification and absorbs any path not matched by a
           # more specific component, so no commit can release nothing. See docs/releasing.md.
           config-file: release-please-config.json
@@ -48,35 +48,35 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --configuration Release --no-restore
+        run: dotnet build --configuration Release --no-restore -p:Version=${{ needs.release-please.outputs.version }}
 
       - name: Test
         run: dotnet test --configuration Release --no-build --verbosity normal
 
-      - name: Pack each released package at its manifest version
+      - name: Pack all packages at the release version
         env:
-          PATHS_RELEASED: ${{ needs.release-please.outputs.paths_released }}
+          VERSION: ${{ needs.release-please.outputs.version }}
         run: |
+          set -euo pipefail
+          if [ -z "$VERSION" ]; then
+            echo "::error::release-please reported a release but produced no version"
+            exit 1
+          fi
           mkdir -p ./artifacts
-          # paths_released is a JSON array of paths whose components got bumped this run.
-          # The post-merge state of .release-please-manifest.json holds the new version
-          # per path, so look it up there. version.txt is NOT used (release-please's
-          # 'simple' strategy could create one, but reading the manifest is canonical and
-          # avoids depending on a side-effect file that may not exist).
-          for path in $(echo "$PATHS_RELEASED" | jq -r '.[]'); do
-            version=$(jq -r --arg p "$path" '.[$p]' .release-please-manifest.json)
-            # "." is the catch-all component for ZeroAlloc.Specification, so that commits
-            # touching no package directory -- root Directory.Packages.props, for instance --
-            # are still attributed and still release. Its csproj lives under src/.
-            if [ "$path" = "." ]; then
-              csproj=src/ZeroAlloc.Specification/ZeroAlloc.Specification.csproj
-            else
-              csproj=$(ls "$path"/*.csproj | head -1)
+
+          # One version for every package, so the assembly stamped by the build step above is
+          # already correct and pack only has to label the package. It also keeps the bundled
+          # copy of the generator and the standalone ZeroAlloc.Specification.Generator package
+          # on the same AssemblyVersion, which is what conflict resolution keys on.
+          for csproj in src/*/*.csproj; do
+            if grep -q "<IsPackable>false</IsPackable>" "$csproj"; then
+              echo "Skipping $csproj (not packable)"
+              continue
             fi
-            echo "Packing $csproj at version $version (from manifest)"
-            dotnet pack "$csproj" --configuration Release --no-build \
-              -p:PackageVersion="$version" -p:Version="$version" -o ./artifacts
+            echo "Packing $csproj at $VERSION"
+            dotnet pack "$csproj" --configuration Release --no-build -p:PackageVersion="$VERSION" -o ./artifacts
           done
+
           ls -la ./artifacts
           # Releasing nothing while reporting success is the failure mode this guards.
           if ! ls ./artifacts/*.nupkg >/dev/null 2>&1; then

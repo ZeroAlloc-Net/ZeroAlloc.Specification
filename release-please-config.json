@@ -11,11 +11,6 @@
         "samples",
         "benchmarks"
       ]
-    },
-    "src/ZeroAlloc.Specification.Generator": {
-      "release-type": "simple",
-      "package-name": "ZeroAlloc.Specification.Generator",
-      "changelog-path": "CHANGELOG.md"
     }
   },
   "changelog-sections": [
