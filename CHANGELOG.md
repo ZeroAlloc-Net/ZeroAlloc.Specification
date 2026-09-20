@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.0...ZeroAlloc.Specification-v1.2.1) (2026-09-20)
+
+
+### Bug Fixes
+
+* release every package at one version ([#64](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/64)) ([632cd13](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/632cd13926b0467d6780e59e91b98ed31f0e4dba))
+
 ## [1.2.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.1.0...ZeroAlloc.Specification-v1.2.0) (2026-09-19)
 
 
