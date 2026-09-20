@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.1...ZeroAlloc.Specification-v1.2.2) (2026-09-20)
+
+
+### Bug Fixes
+
+* pack the rescue workflow at the single manifest version ([#66](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/66)) ([8a16184](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/8a161841b562a8a8bf1b94b22403065762838913))
+
 ## [1.2.1](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.0...ZeroAlloc.Specification-v1.2.1) (2026-09-20)
 
 
