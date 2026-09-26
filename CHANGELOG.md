@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.3...ZeroAlloc.Specification-v1.2.4) (2026-09-26)
+
+
+### Bug Fixes
+
+* mark released analyzer rules and public api as shipped and automate the move ([#73](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/73)) ([6861ae8](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/6861ae8792052dc58d5d59543e0da15c08b35b33))
+
 ## [1.2.3](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.2...ZeroAlloc.Specification-v1.2.3) (2026-09-20)
 
 
