@@ -11,3 +11,11 @@ ZA001   | ZeroAlloc.Specification | Error    | [Specification] must be applied t
 ZA002   | ZeroAlloc.Specification | Error    | Specification struct must implement ISpecification<T>
 ZA003   | ZeroAlloc.Specification | Error    | Specification struct must be partial
 ZA004   | ZeroAlloc.Specification | Warning  | Specification struct should be readonly
+
+## Release 1.2.5
+
+### New Rules
+
+Rule ID | Category                | Severity | Notes
+--------|-------------------------|----------|------------------------------------------------------------------
+ZA005   | ZeroAlloc.Specification | Warning  | Nested specification inside a containing type that is not partial
