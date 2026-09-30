@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.5](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.4...ZeroAlloc.Specification-v1.2.5) (2026-09-30)
+
+
+### Bug Fixes
+
+* generate nested, generic and global-namespace specs into the real type ([#82](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/82)) ([92f5b7a](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/92f5b7a4d420b7f681e10dba2f42739795913fe4)), closes [#79](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/79)
+* name generated files after the namespace and containing types ([#80](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/80)) ([5d5924b](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/5d5924b78a31e4f047bb2127c4739bae2eb92ddf)), closes [#78](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/78)
+
 ## [1.2.4](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.3...ZeroAlloc.Specification-v1.2.4) (2026-09-26)
 
 
