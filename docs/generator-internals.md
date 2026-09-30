@@ -19,7 +19,7 @@ The generator uses the Roslyn `IIncrementalGenerator` API, which only re-runs on
 SyntaxProvider
   → ForAttributeWithMetadataName("ZeroAlloc.Specification.SpecificationAttribute")
   → filter: node is StructDeclarationSyntax
-  → transform: extract SpecificationInfo (name, namespace, type parameter, accessibility)
+  → transform: extract SpecificationInfo (name, namespace, containing types, type parameters, accessibility)
   → emit: partial struct file with And/Or/Not methods
 ```
 
@@ -36,7 +36,11 @@ SyntaxProvider
 
 The `SpecificationInfo` class captures what the generator needs per spec:
 
-- Name, Namespace, TypeParameterName, Accessibility
+- Name, Namespace (null in the global namespace), CandidateType, Accessibility
+- TypeReference: the name with its type parameters, as in `IsActive<T>`
+- ContainingTypeHeaders: a partial declaration per containing type, outermost first
+- NonPartialContainingType: the outermost containing type that is not `partial`, for ZA005
+- HintName: the generated file's name, qualified with the namespace, containing types and arity
 - Location (excluded from `Equals`/`GetHashCode` to prevent re-runs on whitespace changes)
 - ImplementsInterface, IsPartial, IsReadonly
 
@@ -52,24 +56,45 @@ For `public readonly partial struct ActiveUserSpec : ISpecification<User>`, the 
 
 namespace MyApp
 {
-    public readonly partial struct ActiveUserSpec
+    public partial struct ActiveUserSpec
     {
         public global::ZeroAlloc.Specification.AndSpecification<ActiveUserSpec, TOther, User> And<TOther>(TOther other)
-            where TOther : struct, global::ZeroAlloc.Specification.ISpecification<User>
-            => new(this, other);
+            where TOther : struct, global::ZeroAlloc.Specification.ISpecification<User> => new(this, other);
 
         public global::ZeroAlloc.Specification.OrSpecification<ActiveUserSpec, TOther, User> Or<TOther>(TOther other)
-            where TOther : struct, global::ZeroAlloc.Specification.ISpecification<User>
-            => new(this, other);
+            where TOther : struct, global::ZeroAlloc.Specification.ISpecification<User> => new(this, other);
 
-        public global::ZeroAlloc.Specification.NotSpecification<ActiveUserSpec, User> Not()
-            => new(this);
+        public global::ZeroAlloc.Specification.NotSpecification<ActiveUserSpec, User> Not() => new(this);
+
+        public static implicit operator global::System.Linq.Expressions.Expression<global::System.Func<User, bool>>(ActiveUserSpec spec)
+            => spec.ToExpression();
     }
 }
 ```
 
 The accessibility modifier (`public`/`internal`) matches the user's declaration.
 
+### Nested, generic and global-namespace specifications
+
+- A specification in the global namespace is emitted without a `namespace` block.
+- A generic specification is emitted with its type parameter names, as `partial struct IsActive<T>`, and the combinators refer to it as `IsActive<T>`. Constraints are not repeated; a partial part may leave them out.
+- A nested specification is emitted inside a partial declaration of every containing type, outermost first, each with its kind and type parameter names:
+
+```csharp
+namespace MyApp
+{
+    partial class Rules<TUser>
+    {
+        public partial struct ActiveUserSpec
+        {
+            // And, Or, Not and the implicit conversion, as above
+        }
+    }
+}
+```
+
+Every containing type must be `partial` for that; otherwise the generator reports ZA005 and emits nothing for the specification.
+
 ## Diagnostics Enforcement
 
-All four diagnostics are enforced in the transform step before code emission. If a diagnostic is reported, the generator does not emit any code for that type.
+The generator does not emit any code for a type that gets ZA001, ZA002, ZA003 or ZA005. ZA004 is a warning; the code is still generated.

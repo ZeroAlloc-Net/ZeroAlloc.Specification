@@ -59,6 +59,8 @@ Your spec struct must be:
 | `struct` | Yes | Only structs can be zero-allocation |
 | `readonly` | Recommended | Prevents defensive copies (ZA004 warning if missing) |
 
+A spec can be declared anywhere a struct can: in the global namespace, as a generic struct such as `IsActive<T>`, or nested in another type. A nested spec needs every containing type to be `partial` too, because the generator reopens each of them; otherwise it reports ZA005 and generates nothing.
+
 ## Stateful vs Stateless Specs
 
 **Stateless** specs hold no instance fields — their expression is always the same:
