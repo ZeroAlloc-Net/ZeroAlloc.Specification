@@ -20,7 +20,7 @@ ZeroAlloc.Specification uses a Roslyn incremental source generator to emit `And<
 
 - **Zero allocations** — composed specs are structs, not classes
 - **EF Core compatible** — every spec exposes `ToExpression()` returning `Expression<Func<T, bool>>`
-- **Compile-time safety** — ZA001–ZA004 diagnostics enforce correct usage
+- **Compile-time safety** — ZA001–ZA005 diagnostics enforce correct usage
 - **Familiar API** — fluent (`.And()`, `.Or()`, `.Not()`) and static builder (`Spec.And()`, `Spec.Or()`, `Spec.Not()`)
 - **.NET 8+** — uses C# 12 features throughout
 

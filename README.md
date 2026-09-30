@@ -74,7 +74,7 @@ Full methodology + analysis: [docs/performance.md](https://github.com/ZeroAlloc-
 - **EF Core compatible** — every spec exposes `ToExpression()` returning `Expression<Func<T, bool>>`
 - **Source-generated fluent API** — `And<TOther>()`, `Or<TOther>()`, `Not()` added by Roslyn generator
 - **Static builder** — `Spec.And()`, `Spec.Or()`, `Spec.Not()` for explicit type arguments
-- **Compile-time safety** — ZA001–ZA004 diagnostics enforce correct `partial struct` usage
+- **Compile-time safety** — ZA001–ZA005 diagnostics enforce correct `partial struct` usage
 - **.NET 8+, C# 12**
 
 ## Documentation

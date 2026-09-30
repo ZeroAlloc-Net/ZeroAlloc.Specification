@@ -35,4 +35,12 @@ internal static class Diagnostics
         category: "ZeroAlloc.Specification",
         defaultSeverity: DiagnosticSeverity.Warning,
         isEnabledByDefault: true);
+
+    public static readonly DiagnosticDescriptor ContainingTypeNotPartial = new(
+        id: "ZA005",
+        title: "Nested specification inside a containing type that is not partial",
+        messageFormat: "Specification '{0}' is not generated because its containing type '{1}' is not partial",
+        category: "ZeroAlloc.Specification",
+        defaultSeverity: DiagnosticSeverity.Warning,
+        isEnabledByDefault: true);
 }

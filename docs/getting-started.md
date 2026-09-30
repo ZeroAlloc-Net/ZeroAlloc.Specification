@@ -81,4 +81,4 @@ EF Core translates the composed expression tree to SQL.
 
 - [Core Concepts](core-concepts) — understand struct constraints and zero-allocation guarantees
 - [Fluent API](fluent-api) — all generated methods
-- [Diagnostics](diagnostics) — fix ZA001–ZA004 compile errors
+- [Diagnostics](diagnostics) — fix ZA001–ZA005 compile errors and warnings
