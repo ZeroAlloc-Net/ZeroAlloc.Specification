@@ -50,7 +50,7 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
                 ctx.ReportDiagnostic(Diagnostic.Create(Diagnostics.NotReadonly, info.Location, info.TypeName));
 
             var source = GenerateSource(info);
-            ctx.AddSource($"{info.TypeName}.g.cs", SourceText.From(source, Encoding.UTF8));
+            ctx.AddSource(info.HintName, SourceText.From(source, Encoding.UTF8));
         });
     }
 
@@ -84,6 +84,7 @@ public sealed class SpecificationGenerator : IIncrementalGenerator
 
         return new SpecificationInfo(
             structSymbol.Name,
+            HintNames.ForSpecification(structSymbol),
             structSymbol.ContainingNamespace.ToDisplayString(),
             candidateType,
             structSymbol.IsReadOnly,
@@ -137,6 +138,8 @@ internal static class SymbolExtensions
 internal sealed class SpecificationInfo
 {
     public string TypeName { get; }
+    // The generated file's name, unique within the compilation; see HintNames.ForSpecification.
+    public string HintName { get; }
     public string Namespace { get; }
     public string CandidateType { get; }
     public bool IsReadOnly { get; }
@@ -147,6 +150,7 @@ internal sealed class SpecificationInfo
 
     public SpecificationInfo(
         string typeName,
+        string hintName,
         string @namespace,
         string candidateType,
         bool isReadOnly,
@@ -156,6 +160,7 @@ internal sealed class SpecificationInfo
         string accessibility = "public")
     {
         TypeName = typeName;
+        HintName = hintName;
         Namespace = @namespace;
         CandidateType = candidateType;
         IsReadOnly = isReadOnly;
@@ -171,6 +176,7 @@ internal sealed class SpecificationInfo
     public override bool Equals(object? obj) =>
         obj is SpecificationInfo other &&
         TypeName == other.TypeName &&
+        HintName == other.HintName &&
         Namespace == other.Namespace &&
         CandidateType == other.CandidateType &&
         IsReadOnly == other.IsReadOnly &&
@@ -183,6 +189,7 @@ internal sealed class SpecificationInfo
         unchecked
         {
             var hash = TypeName?.GetHashCode() ?? 0;
+            hash = (hash * 397) ^ (HintName?.GetHashCode() ?? 0);
             hash = (hash * 397) ^ (Namespace?.GetHashCode() ?? 0);
             hash = (hash * 397) ^ (CandidateType?.GetHashCode() ?? 0);
             hash = (hash * 397) ^ IsReadOnly.GetHashCode();

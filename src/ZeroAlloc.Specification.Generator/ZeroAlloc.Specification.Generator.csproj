@@ -20,6 +20,10 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="5.9.0" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Lets the tests reach internal helpers such as HintNames.Sanitize directly. -->
+    <InternalsVisibleTo Include="ZeroAlloc.Specification.Tests" />
+  </ItemGroup>
+  <ItemGroup>
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
   </ItemGroup>
