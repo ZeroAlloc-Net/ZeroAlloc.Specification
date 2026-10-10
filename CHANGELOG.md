@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.5...ZeroAlloc.Specification-v1.3.0) (2026-10-10)
+
+
+### Features
+
+* mark ZeroAlloc.Specification as AOT-compatible ([#84](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/84)) ([5bb9cf3](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/5bb9cf3e2847e928eee27d1f934f93ab4a461249))
+
 ## [1.2.5](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.2.4...ZeroAlloc.Specification-v1.2.5) (2026-09-30)
 
 
