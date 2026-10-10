@@ -3,6 +3,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageId>ZeroAlloc.Specification</PackageId>
+    <IsAotCompatible>true</IsAotCompatible>
     <Version>0.1.0</Version>
     <Description>Source-generated, zero-allocation specification pattern for .NET 8+. Compose predicates as structs — no heap allocations, EF Core compatible.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
