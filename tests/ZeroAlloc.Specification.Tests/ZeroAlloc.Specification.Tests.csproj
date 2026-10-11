@@ -15,7 +15,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="5.9.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.31" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.31" />
-    <PackageReference Include="ZeroAlloc.TestHelpers" Version="1.6.0">
+    <PackageReference Include="ZeroAlloc.TestHelpers" Version="1.6.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>contentfiles;build</IncludeAssets>
     </PackageReference>
