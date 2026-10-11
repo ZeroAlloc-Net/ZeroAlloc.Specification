@@ -7,9 +7,19 @@
     <PublishAot>true</PublishAot>
     <InvariantGlobalization>true</InvariantGlobalization>
     <OptimizationPreference>Size</OptimizationPreference>
+    <!-- The ZeroAlloc.TestHelpers content files rely on implicit usings,
+         ZeroAlloc-Net/ZeroAlloc.TestHelpers#68. -->
+    <ImplicitUsings>enable</ImplicitUsings>
 
     <WarningsAsErrors>$(WarningsAsErrors);IL2026;IL2067;IL2075;IL2091;IL3050;IL3051</WarningsAsErrors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ZeroAlloc.TestHelpers" Version="1.6.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>contentfiles;build</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\ZeroAlloc.Specification\ZeroAlloc.Specification.csproj"
