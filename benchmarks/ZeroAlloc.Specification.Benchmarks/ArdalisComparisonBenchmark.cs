@@ -57,7 +57,10 @@ public class ArdalisComparisonBenchmark
 
     [Benchmark(Description = "ZeroAlloc.Specification: construct composed spec")]
     [BenchmarkCategory("Construct")]
-    public object Za_Construct() => default(IsPositiveSpec).And(default(IsEvenSpec));
+    // Returns the struct type itself: returning object would box it and charge the
+    // 24 B box to ZA, which the library never allocates.
+    public AndSpecification<IsPositiveSpec, IsEvenSpec, int> Za_Construct()
+        => default(IsPositiveSpec).And(default(IsEvenSpec));
 
     // --- Compose And on the fly ---
 
@@ -82,7 +85,8 @@ public class ArdalisComparisonBenchmark
 
     [Benchmark(Description = "ZeroAlloc.Specification: compose two specs")]
     [BenchmarkCategory("Compose")]
-    public object Za_Compose() => default(IsPositiveSpec).And(default(IsEvenSpec));
+    public AndSpecification<IsPositiveSpec, IsEvenSpec, int> Za_Compose()
+        => default(IsPositiveSpec).And(default(IsEvenSpec));
 
     // --- In-memory evaluation over 100-item array ---
 
