@@ -67,4 +67,30 @@ public class CompositionAllocationTests
                 Spec.Not<Small, int>(default));
             _sink = spec.IsSatisfiedBy(4) && spec.IsSatisfiedBy(101) && !spec.IsSatisfiedBy(3);
         }, "(And) Or (Not).IsSatisfiedBy");
+    // The README's fluent sample goes through the generated And/Or/Not instance methods, not
+    // Spec.And/Or/Not, so the generated path is measured on its own.
+
+    [Fact]
+    public void FluentAnd_ComposeAndEvaluate_IsZeroAlloc() =>
+        AllocationGate.AssertBudget(0, Iterations, () =>
+        {
+            var spec = new EvenSpec().And(new GT0Spec());
+            _sink = spec.IsSatisfiedBy(4) && !spec.IsSatisfiedBy(-2);
+        }, "fluent And.IsSatisfiedBy");
+
+    [Fact]
+    public void FluentOr_ComposeAndEvaluate_IsZeroAlloc() =>
+        AllocationGate.AssertBudget(0, Iterations, () =>
+        {
+            var spec = new EvenSpec().Or(new GT0Spec());
+            _sink = spec.IsSatisfiedBy(-2) && !spec.IsSatisfiedBy(-1);
+        }, "fluent Or.IsSatisfiedBy");
+
+    [Fact]
+    public void FluentNot_ComposeAndEvaluate_IsZeroAlloc() =>
+        AllocationGate.AssertBudget(0, Iterations, () =>
+        {
+            var spec = new EvenSpec().Not();
+            _sink = spec.IsSatisfiedBy(3) && !spec.IsSatisfiedBy(4);
+        }, "fluent Not.IsSatisfiedBy");
 }
