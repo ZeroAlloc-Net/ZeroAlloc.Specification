@@ -49,19 +49,21 @@ See [Stateless Caching](cookbook/stateless-caching).
 ## Head-to-head vs Ardalis.Specification
 
 <!-- BENCH:START -->
-_Last refreshed: 2026-05-13_
+_Last refreshed: 2026-10-15 — Ardalis.Specification 9.3.1, .NET 10.0.13, Intel Core Ultra 7 255H, BenchmarkDotNet v0.15.8._
 
 Ardalis.Specification is the most-used specification library in .NET — class-based, designed for EF Core query composition. ZA.Specification's struct-based design pays off across every operation that exercises both libraries' core surface.
 
 | Operation | Ardalis.Specification | ZA.Specification | Speedup |
 |---|---:|---:|---:|
-| Construct composed spec | 1,719 ns / 1,248 B | **40 ns / 24 B** | **43× faster, 52× less alloc** |
-| Compose two specs | 3,959 ns / 2,648 B | **22 ns / 24 B** | **180× faster, 110× less alloc** |
-| Evaluate over 100 items (in-memory) | 170,862 ns / 4,688 B | **150 ns / 0 B** | **1,136× faster, ∞× less alloc** |
+| Construct composed spec | 305 ns / 792 B | **< 1 ns / 0 B** | **> 300× faster, 0 B alloc** |
+| Compose two specs | 821 ns / 1,752 B | **< 1 ns / 0 B** | **> 800× faster, 0 B alloc** |
+| Evaluate over 100 items (in-memory) | 15,599 ns / 4,743 B | **49 ns / 0 B** | **~320× faster, 0 B alloc** |
 
-The in-memory-evaluation gap is dramatic because Ardalis is designed for **IQueryable composition** — `WhereExpression.Filter.Compile()` is hundreds of microseconds per call. For EF Core / database queries where the SQL provider dominates the cost, this overhead is invisible. For in-memory filtering (which many users do), it dominates.
+Rows under 1 ns are below what BenchmarkDotNet can tell apart from an empty method: the JIT reduces building two empty structs to nothing, so those speedups are lower bounds. The machine was shared while measuring, so timings are approximate; the allocations are exact. Earlier versions of this table charged ZA 24 B per composed spec; that was the benchmark boxing the struct into `object`, not the library.
 
-ZA.Specification's `IsSatisfiedBy` is a direct virtual call on a struct value — the JIT inlines it, the composition tree resolves to a sequence of `&&` operators in straight-line code. Zero allocation per evaluation regardless of composition depth.
+The in-memory-evaluation gap is dramatic because Ardalis is designed for **IQueryable composition** — `WhereExpression.Filter.Compile()` runs on every call and costs about 15 µs here, almost all of the Ardalis row. For EF Core / database queries where the SQL provider dominates the cost, this overhead is invisible. For in-memory filtering (which many users do), it dominates.
+
+ZA.Specification's `IsSatisfiedBy` is a direct, non-virtual call on a struct value — the JIT inlines it, the composition tree resolves to a sequence of `&&` operators in straight-line code. Zero allocation per evaluation regardless of composition depth.
 <!-- BENCH:END -->
 
 ## Vs `Func<T, bool>` (no library)
