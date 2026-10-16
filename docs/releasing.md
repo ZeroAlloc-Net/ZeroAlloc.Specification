@@ -1,14 +1,9 @@
 # Releasing
 
-This repo uses release-please in manifest mode with two components:
-
-```
-"."                                    -> ZeroAlloc.Specification   (catch-all)
-"src/ZeroAlloc.Specification.Generator" -> ZeroAlloc.Specification.Generator
-```
-
-The two packages version independently, and the root `"."` component absorbs any changed path not
-matched by the more specific one.
+This repo uses release-please in manifest mode with one component, `"."`, released as
+`ZeroAlloc.Specification`. Both packages, `ZeroAlloc.Specification` and
+`ZeroAlloc.Specification.Generator`, ship at its version, under tags such as
+`ZeroAlloc.Specification-v1.3.2`.
 
 ## Why the root component matters
 
@@ -22,28 +17,26 @@ With central package management this was not hypothetical — **every dependency
 this way: its #131 raised a dependency floor, touched nothing under `src/`, released nothing, and
 left the broken dependency live on NuGet while the issue it fixed sat closed with green CI.
 
-Making `"."` the component for `ZeroAlloc.Specification` closes that: orphan paths now fall to the
-core package, which is where a repo-wide change belongs anyway.
+A single root component closes that: every changed path counts toward the one release.
 
-## Why not a single component
+## Why one version for both packages
 
-`ZeroAlloc.Saga` and `ZeroAlloc.EventSourcing` collapsed to one component instead, because their
-sibling packages carry `ProjectReference`s to the core package. Packing with a global
-`-p:PackageVersion` stamped each sibling's own version onto that dependency, so they published
-dependency ranges naming versions they were never built against — in one case a version that did
-not exist. A single version makes that correct by construction.
+Independent versions left no single version at build time, so the build could not stamp the
+assemblies, and the generator copy bundled in `ZeroAlloc.Specification` could differ from the
+standalone `ZeroAlloc.Specification.Generator` package. One version makes both correct by
+construction. See #64.
 
-That does not apply here. `ZeroAlloc.Specification.Generator` is standalone and declares no
-dependency on `ZeroAlloc.Specification`, so there is no ProjectReference to mis-stamp and no reason
-to force the two packages into lockstep.
+## Publishing
 
-## Verify against NuGet, not against a green tick
+The `publish` job in `.github/workflows/release-please.yml` calls the shared
+[`publish.yml`](https://github.com/ZeroAlloc-Net/.github/blob/main/.github/workflows/publish.yml).
+It builds the release tag, packs every project under `src/` that MSBuild evaluates as packable,
+checks the version inside each package, pushes to nuget.org and GitHub Packages, and then waits
+until nuget.org serves every package at the release version.
 
-Producing no packages is now a hard error, but the final check still belongs to you:
-
-```bash
-curl -s https://api.nuget.org/v3-flatcontainer/zeroalloc.specification/index.json
-```
+If a release was tagged but not published, rescue it with
+`gh workflow run publish-from-manifest.yml`, which runs the same workflow against the tag of the
+manifest version. Add `-f dry-run=true` to build, pack and verify without pushing.
 
 ## Release tracking
 

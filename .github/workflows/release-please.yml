@@ -27,6 +27,8 @@ jobs:
       # when the job re-exports it here; without these the job's `if:` is always false.
       prs_created: ${{ steps.release.outputs.prs_created }}
       pr: ${{ steps.release.outputs.pr }}
+      # The publish job builds this tag, ZeroAlloc.Specification-v<version>.
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       # Pushes and PRs made with GITHUB_TOKEN trigger no workflows, so bot PRs
       # never got their required checks. A token from the release bot GitHub App
@@ -45,10 +47,9 @@ jobs:
         id: release
         with:
           # Manifest mode: read release-please-config.json + .release-please-manifest.json
-          # from the repo root. Multiple components (Specification + Specification.Generator)
-          # released as one version — releases_created drives the publish job. The root
-          # component "." is ZeroAlloc.Specification and absorbs any path not matched by a
-          # more specific component, so no commit can release nothing. See docs/releasing.md.
+          # from the repo root. One component, ".", released as ZeroAlloc.Specification:
+          # both packages ship at its version, and releases_created drives the publish job.
+          # See docs/releasing.md.
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
           token: ${{ steps.app-token.outputs.token }}
@@ -73,76 +74,19 @@ jobs:
       # its push triggers the release PR's checks like release-please's own.
       RELEASE_BOT_PRIVATE_KEY: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
 
+  # Builds the release tag, packs every packable project, checks the versions inside the
+  # packages, pushes them, and waits until nuget.org serves every one of them. Shared from
+  # ZeroAlloc-Net/.github so a fix there reaches every repository; see ZeroAlloc-Net/.github#49.
   publish:
     needs: release-please
-    if: ${{ needs.release-please.outputs.releases_created == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-dotnet@v6
-        with:
-          # Installs the SDK global.json pins. Without it the job never installs
-          # that SDK at all and only works when the runner image happens to ship one
-          # satisfying the pin, which is how a publish failed on a lagging image.
-          global-json-file: global.json
-          dotnet-version: 10.0.x
-
-      - name: Restore tools
-        run: dotnet tool restore
-
-      - name: Restore
-        run: dotnet restore
-
-      - name: Build
-        run: dotnet build --configuration Release --no-restore -p:Version=${{ needs.release-please.outputs.version }}
-
-      - name: Test
-        run: dotnet test --configuration Release --no-build --verbosity normal
-
-      - name: Pack all packages at the release version
-        env:
-          VERSION: ${{ needs.release-please.outputs.version }}
-        run: |
-          set -euo pipefail
-          if [ -z "$VERSION" ]; then
-            echo "::error::release-please reported a release but produced no version"
-            exit 1
-          fi
-          mkdir -p ./artifacts
-
-          # One version for every package, so the assembly stamped by the build step above is
-          # already correct and pack only has to label the package. It also keeps the bundled
-          # copy of the generator and the standalone ZeroAlloc.Specification.Generator package
-          # on the same AssemblyVersion, which is what conflict resolution keys on.
-          for csproj in src/*/*.csproj; do
-            if grep -q "<IsPackable>false</IsPackable>" "$csproj"; then
-              echo "Skipping $csproj (not packable)"
-              continue
-            fi
-            echo "Packing $csproj at $VERSION"
-            dotnet pack "$csproj" --configuration Release --no-build -p:PackageVersion="$VERSION" -o ./artifacts
-          done
-
-          ls -la ./artifacts
-          # Releasing nothing while reporting success is the failure mode this guards.
-          if ! ls ./artifacts/*.nupkg >/dev/null 2>&1; then
-            echo "::error::release-please reported a release but no packages were produced"
-            exit 1
-          fi
-
-      - name: Push to NuGet
-        run: |
-          dotnet nuget push ./artifacts/*.nupkg \
-            --source https://api.nuget.org/v3/index.json \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
-            --skip-duplicate
-
-      - name: Push to GitHub Packages
-        run: |
-          dotnet nuget push ./artifacts/*.nupkg \
-            --source https://nuget.pkg.github.com/ZeroAlloc-Net/index.json \
-            --api-key ${{ secrets.GITHUB_TOKEN }} \
-            --skip-duplicate
+    if: needs.release-please.outputs.releases_created == 'true'
+    uses: ZeroAlloc-Net/.github/.github/workflows/publish.yml@main
+    with:
+      tag: ${{ needs.release-please.outputs.tag_name }}
+      version: ${{ needs.release-please.outputs.version }}
+      solution: ZeroAlloc.Specification.slnx
+      # nuget.org, plus GitHub Packages, as before the shared workflow.
+      github-packages: true
+      release-assets: false
+    secrets:
+      NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
