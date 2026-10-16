@@ -28,5 +28,5 @@ ZeroAlloc.Specification uses a Roslyn incremental source generator to emit `And<
 
 | Package | Purpose |
 |---------|---------|
-| `ZeroAlloc.Specification` | Core interfaces and combinator structs |
-| `ZeroAlloc.Specification.Generator` | Roslyn source generator (auto-referenced) |
+| `ZeroAlloc.Specification` | Core interfaces, combinator structs and the bundled source generator |
+| `ZeroAlloc.Specification.Generator` | Standalone source generator, kept for backwards compatibility. New consumers reference only `ZeroAlloc.Specification` |

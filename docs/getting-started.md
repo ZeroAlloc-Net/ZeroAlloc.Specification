@@ -11,10 +11,11 @@ sidebar_position: 2
 
 ```bash
 dotnet add package ZeroAlloc.Specification
-dotnet add package ZeroAlloc.Specification.Generator
 ```
 
-The generator package is a Roslyn analyzer/source generator. It is automatically applied at compile time — no runtime dependency.
+The source generator is bundled into this package and applied at compile time, with no runtime dependency. A single `PackageReference` is all you need.
+
+> The standalone `ZeroAlloc.Specification.Generator` package is still published for backwards compatibility with existing direct PackageReferences, but new consumers should reference only `ZeroAlloc.Specification`.
 
 ## Your First Specification
 
