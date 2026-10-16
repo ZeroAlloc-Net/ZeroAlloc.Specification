@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.3.1...ZeroAlloc.Specification-v1.3.2) (2026-10-16)
+
+
+### Documentation
+
+* rewrite the readme as a product page ([#95](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/95)) ([f84dbdb](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/f84dbdb734fb424a78e64a7c399135aba4d17eb4))
+
 ## [1.3.1](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.3.0...ZeroAlloc.Specification-v1.3.1) (2026-10-15)
 
 
