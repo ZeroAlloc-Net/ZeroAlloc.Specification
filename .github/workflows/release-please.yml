@@ -85,6 +85,10 @@ jobs:
       tag: ${{ needs.release-please.outputs.tag_name }}
       version: ${{ needs.release-please.outputs.version }}
       solution: ZeroAlloc.Specification.slnx
+      # Runtimes the tests target, besides the SDK that global.json pins.
+      dotnet-version: |
+        8.0.x
+        10.0.x
       # nuget.org, plus GitHub Packages, as before the shared workflow.
       github-packages: true
       release-assets: false
