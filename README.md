@@ -12,7 +12,7 @@
 ## Why ZeroAlloc.Specification
 
 - **Composing and evaluating allocates nothing.** `And`, `Or` and `Not` build `readonly struct` values. Composing and calling `IsSatisfiedBy` allocates 0 B, asserted by tests. Ardalis.Specification allocates 1,752 B to compose two specs.
-- **About 320× faster for in-memory filtering than Ardalis.Specification**, measured in the same run: 100 items in 49 ns instead of 15,599 ns, because nothing is compiled per call.
+- **About 630× faster for in-memory filtering than Ardalis.Specification**, measured in the same run over 100 items, because nothing is compiled per call, and it allocates nothing against 4,743 B.
 - **One spec for memory and the database.** Every spec also exposes `ToExpression()`, so EF Core turns the composed spec into a `WHERE` clause.
 - **Works under NativeAOT and trimming**, with a NativeAOT smoke app published and run in CI. Mistakes such as `[Specification]` on a class or a missing `partial` are compile errors ZA001 to ZA003.
 
@@ -69,15 +69,15 @@ Building an expression tree with `ToExpression()` does allocate, as every expres
 
 ## Performance
 
-Head-to-head vs **Ardalis.Specification** 9.3.1, .NET 10.0.13, BenchmarkDotNet v0.15.8.
+Head-to-head vs **Ardalis.Specification** 9.3.1, .NET 10.0.13, BenchmarkDotNet v0.15.8. Allocations are exact; speed is a same-run ratio.
 
-| Operation | Ardalis.Specification | ZA.Specification | Speedup |
+| Operation | Ardalis.Specification time ÷ ZA's | Ardalis alloc | ZA alloc |
 |---|---:|---:|---:|
-| Construct composed spec | 305 ns / 792 B | **< 1 ns / 0 B** | **> 300× faster, 0 B alloc** |
-| Compose two specs | 821 ns / 1,752 B | **< 1 ns / 0 B** | **> 800× faster, 0 B alloc** |
-| Evaluate over 100 items (in-memory) | 15,599 ns / 4,743 B | **49 ns / 0 B** | **~320× faster, 0 B alloc** |
+| Construct composed spec | ZA below resolution | 792 B | **0 B** |
+| Compose two specs | ZA below resolution | 1,752 B | **0 B** |
+| Evaluate over 100 items (in-memory) | **630×** (632–633) | 4,743 B | **0 B** |
 
-Rows under 1 ns are below what BenchmarkDotNet can tell apart from an empty method, so those speedups are lower bounds. The machine was shared while measuring, so timings are approximate; the allocations are exact. For database queries the SQL provider dominates and the gap is invisible; for in-memory filtering it dominates. Full methodology: [docs/performance.md](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/blob/main/docs/performance.md).
+ZA's construct and compose are below what BenchmarkDotNet can tell apart from an empty method, so no finite ratio can be given for them. For database queries the SQL provider dominates and the gap is invisible; for in-memory filtering it dominates. Full methodology: [docs/performance.md](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/blob/main/docs/performance.md).
 
 ## Learn more
 

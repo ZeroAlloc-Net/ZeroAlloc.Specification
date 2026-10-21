@@ -49,19 +49,19 @@ See [Stateless Caching](cookbook/stateless-caching).
 ## Head-to-head vs Ardalis.Specification
 
 <!-- BENCH:START -->
-_Last refreshed: 2026-10-15 — Ardalis.Specification 9.3.1, .NET 10.0.13, Intel Core Ultra 7 255H, BenchmarkDotNet v0.15.8._
+_Last refreshed: 2026-10-21 — Ardalis.Specification 9.3.1, .NET 10.0.13, BenchmarkDotNet v0.15.8, Windows 11 on an otherwise idle i9-12900HK; out of process, three launches, pinned to two performance cores. Allocations are exact. Speed is shown as same-run ratios; absolute timings are not published._
 
 Ardalis.Specification is the most-used specification library in .NET — class-based, designed for EF Core query composition. ZA.Specification's struct-based design pays off across every operation that exercises both libraries' core surface.
 
-| Operation | Ardalis.Specification | ZA.Specification | Speedup |
+| Operation | Ardalis.Specification time ÷ ZA's | Ardalis alloc | ZA alloc |
 |---|---:|---:|---:|
-| Construct composed spec | 305 ns / 792 B | **< 1 ns / 0 B** | **> 300× faster, 0 B alloc** |
-| Compose two specs | 821 ns / 1,752 B | **< 1 ns / 0 B** | **> 800× faster, 0 B alloc** |
-| Evaluate over 100 items (in-memory) | 15,599 ns / 4,743 B | **49 ns / 0 B** | **~320× faster, 0 B alloc** |
+| Construct composed spec | ZA below resolution ¹ | 792 B | **0 B** |
+| Compose two specs | ZA below resolution ¹ | 1,752 B | **0 B** |
+| Evaluate over 100 items (in-memory) | **630×** (632–633) | 4,743 B | **0 B** |
 
-Rows under 1 ns are below what BenchmarkDotNet can tell apart from an empty method: the JIT reduces building two empty structs to nothing, so those speedups are lower bounds. The machine was shared while measuring, so timings are approximate; the allocations are exact. Earlier versions of this table charged ZA 24 B per composed spec; that was the benchmark boxing the struct into `object`, not the library.
+¹ ZA.Specification's construct and compose rows are below what BenchmarkDotNet can tell apart from an empty method: the JIT reduces building two empty structs to nothing, while Ardalis' rows are measurable, so no finite ratio can be given. Ardalis' compose takes 2.74 times as long as its construct. Earlier versions of this table charged ZA 24 B per composed spec; that was the benchmark boxing the struct into `object`, not the library.
 
-The in-memory-evaluation gap is dramatic because Ardalis is designed for **IQueryable composition** — `WhereExpression.Filter.Compile()` runs on every call and costs about 15 µs here, almost all of the Ardalis row. For EF Core / database queries where the SQL provider dominates the cost, this overhead is invisible. For in-memory filtering (which many users do), it dominates.
+The in-memory-evaluation gap is dramatic because Ardalis is designed for **IQueryable composition** — `WhereExpression.Filter.Compile()` runs on every call, almost all of the Ardalis row. For EF Core / database queries where the SQL provider dominates the cost, this overhead is invisible. For in-memory filtering (which many users do), it dominates.
 
 ZA.Specification's `IsSatisfiedBy` is a direct, non-virtual call on a struct value — the JIT inlines it, the composition tree resolves to a sequence of `&&` operators in straight-line code. Zero allocation per evaluation regardless of composition depth.
 <!-- BENCH:END -->
@@ -73,10 +73,10 @@ The [benchmarks/ZeroAlloc.Specification.Benchmarks](https://github.com/ZeroAlloc
 Why this pairing: `Func<T, bool>` is the idiomatic C# alternative to struct specifications. Every lambda capturing outer state is a heap allocation, so composing `positive && even` via `Func` allocates roughly one closure per captured predicate plus one for the composed result. The struct path allocates none — the `AndSpecification<TLeft, TRight, T>` value lives on the stack.
 
 ```bash
-dotnet run --project benchmarks/ZeroAlloc.Specification.Benchmarks -c Release --filter "*"
+dotnet run --project benchmarks/ZeroAlloc.Specification.Benchmarks -c Release -- --filter "*" --launchCount 3
 ```
 
 What to watch:
 
-- **Allocated column**: the `Specification struct composed` row must read `0 B/op`. The `Func<int, bool> composed` row allocates the three lambda captures each iteration
-- **Ratio column**: struct inlining typically makes the struct path several times faster than delegate invocation for simple predicates, with the gap widening as the composition depth grows
+- **Allocated column**: the `Specification struct composed` row must read `0 B/op`. The `Func<int, bool> composed` row allocates 32 B per call for its lambda captures; measured 2026-10-21 alongside the table above
+- **Ratio column**: struct inlining makes the struct path faster than delegate invocation for simple predicates: the `Func` row takes 1.93 times as long (1.91–1.96) at this composition depth
