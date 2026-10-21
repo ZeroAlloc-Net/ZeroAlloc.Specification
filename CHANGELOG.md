@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.3.2...ZeroAlloc.Specification-v1.3.3) (2026-10-21)
+
+
+### Documentation
+
+* re-run the benchmarks pinned, with three launches ([#106](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/106)) ([9a0d853](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/9a0d853ecdc2b415003f1b15f98d350a6259aa81))
+
 ## [1.3.2](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.3.1...ZeroAlloc.Specification-v1.3.2) (2026-10-16)
 
 
