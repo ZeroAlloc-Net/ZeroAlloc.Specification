@@ -56,6 +56,11 @@
     <LangVersion>12</LangVersion>
     <WarningsAsErrors>$(WarningsAsErrors);RS0016;RS0017</WarningsAsErrors>
 
+    <!-- ci-baseline: the same package audit locally as in CI. -->
+    <NuGetAudit>true</NuGetAudit>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>moderate</NuGetAuditLevel>
+
     <!-- NuGet metadata (shared) -->
     <Authors>ZeroAlloc-Net</Authors>
     <Company>ZeroAlloc-Net</Company>
