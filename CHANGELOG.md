@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.3.3...ZeroAlloc.Specification-v1.4.0) (2026-11-11)
+
+
+### Features
+
+* add .NET 11 support ([#118](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/118)) ([6d76ac0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/6d76ac0c0d01e36c4db5f27b0d451a7da38433f8))
+
+
+### Documentation
+
+* add context7.json to claim the library on Context7 ([#115](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/115)) ([6efb82e](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/6efb82e2a28a006b1e4a03163aa0f8aa1277a54c))
+
 ## [1.3.3](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.3.2...ZeroAlloc.Specification-v1.3.3) (2026-10-21)
 
 
