@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.4.0...ZeroAlloc.Specification-v1.4.1) (2026-11-16)
+
+
+### Bug Fixes
+
+* embed PDBs so Go to Definition shows the package source ([#125](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/issues/125)) ([37378ec](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/37378ec1e8a5b4732df588f8dd16e635bb44b881))
+
 ## [1.4.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.3.3...ZeroAlloc.Specification-v1.4.0) (2026-11-11)
 
 
