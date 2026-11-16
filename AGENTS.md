@@ -69,7 +69,8 @@ dotnet test tests/ZeroAlloc.Specification.Tests -c Release -f net8.0 --filter "F
 ```
 
 Packing: `dotnet pack` fails with ZAVERSION001 or ZAVERSION002 unless the version is passed on the
-command line, for example `dotnet pack -c Release -p:Version=9.9.9-local.$SHA`. When packing with
+command line, for example
+`SHA=$(git rev-parse --short HEAD); dotnet pack -c Release -p:Version=9.9.9-local.$SHA`. When packing with
 `--no-build`, pass the same `-p:Version` to the build step, or the assembly version differs.
 
 ## Conventions and gotchas
