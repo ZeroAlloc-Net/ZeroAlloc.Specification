@@ -19,3 +19,11 @@ ZA004   | ZeroAlloc.Specification | Warning  | Specification struct should be re
 Rule ID | Category                | Severity | Notes
 --------|-------------------------|----------|------------------------------------------------------------------
 ZA005   | ZeroAlloc.Specification | Warning  | Nested specification inside a containing type that is not partial
+
+## Release 2.0.0
+
+### Changed Rules
+
+Rule ID | New Category            | New Severity | Old Category            | Old Severity | Notes
+--------|-------------------------|--------------|-------------------------|--------------|------------------------------------------------------------------
+ZA005   | ZeroAlloc.Specification | Error        | ZeroAlloc.Specification | Warning      | Nested specification inside a containing type that is not partial
