@@ -8,7 +8,7 @@ slug: /
 
 # ZeroAlloc.Specification
 
-ZeroAlloc.Specification is a source-generated, zero-allocation implementation of the [Specification pattern](https://en.wikipedia.org/wiki/Specification_pattern) for .NET 8+.
+ZeroAlloc.Specification is a source-generated, zero-allocation implementation of the [Specification pattern](https://en.wikipedia.org/wiki/Specification_pattern) for .NET 10 and .NET 11.
 
 ## Why ZeroAlloc.Specification?
 
@@ -22,7 +22,7 @@ ZeroAlloc.Specification uses a Roslyn incremental source generator to emit `And<
 - **EF Core compatible** — every spec exposes `ToExpression()` returning `Expression<Func<T, bool>>`
 - **Compile-time safety** — ZA001–ZA005 diagnostics enforce correct usage
 - **Familiar API** — fluent (`.And()`, `.Or()`, `.Not()`) and static builder (`Spec.And()`, `Spec.Or()`, `Spec.Not()`)
-- **.NET 8+** — uses C# 12 features throughout
+- **.NET 10 and .NET 11**: the runtime package targets `net10.0` and `net11.0`
 
 ## Packages
 

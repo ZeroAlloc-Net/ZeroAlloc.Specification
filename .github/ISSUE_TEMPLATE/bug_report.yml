@@ -19,7 +19,7 @@ body:
     id: dotnet-version
     attributes:
       label: .NET version
-      placeholder: e.g. .NET 8.0.100
+      placeholder: e.g. .NET 10.0.100
     validations:
       required: true
 
