@@ -22,7 +22,7 @@
 dotnet add package ZeroAlloc.Specification
 ```
 
-The source generator ships inside this package. Targets .NET 8 and later.
+The source generator ships inside this package. Targets .NET 10 and .NET 11.
 
 ## Quick start
 

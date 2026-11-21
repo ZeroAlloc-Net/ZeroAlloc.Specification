@@ -1,6 +1,6 @@
 # AGENTS.md: ZeroAlloc.Specification
 
-Source-generated specification pattern for .NET 8 and later. A `[Specification]` `readonly partial struct`
+Source-generated specification pattern for .NET 10 and .NET 11. A `[Specification]` `readonly partial struct`
 gets `And`, `Or` and `Not` from a Roslyn generator, composing and `IsSatisfiedBy` allocate nothing, and
 `ToExpression()` gives EF Core a combined expression tree. Two NuGet packages ship from one version:
 `ZeroAlloc.Specification` (runtime library, with the generator bundled inside) and the standalone
@@ -8,7 +8,7 @@ gets `And`, `Or` and `Not` from a Roslyn generator, composing and `IsSatisfiedBy
 
 ## Layout
 
-- `src/ZeroAlloc.Specification`: runtime library, targets `net8.0` and `net11.0`, `IsAotCompatible`.
+- `src/ZeroAlloc.Specification`: runtime library, targets `net10.0` and `net11.0`, `IsAotCompatible`.
   Public API is tracked by `PublicAPI.Shipped.txt` and `PublicAPI.Unshipped.txt`.
 - `src/ZeroAlloc.Specification.Generator`: the generator, `netstandard2.0`. Its diagnostics (ZA001 to
   ZA005) are tracked in `AnalyzerReleases.Shipped.md` and `AnalyzerReleases.Unshipped.md`.
@@ -25,8 +25,8 @@ gets `And`, `Or` and `Not` from a Roslyn generator, composing and `IsSatisfiedBy
 ## Build and test
 
 `global.json` pins SDK 11.0.100 with `rollForward: latestMinor`; CI also installs 10.0.x. The test
-project targets `net8.0` and `net11.0`, so running it needs the .NET 8 and .NET 11 runtimes. The
-`net8.0` run needs the 8 runtime even though the 11 SDK builds it.
+project targets `net10.0` and `net11.0`, so running it needs the .NET 10 and .NET 11 runtimes. The
+`net10.0` run needs the 10 runtime even though the 11 SDK builds it.
 
 CI job `build` (`.github/workflows/ci.yml`):
 
@@ -65,7 +65,7 @@ Inner loop, verified locally, no CI job runs these:
 
 ```bash
 dotnet test tests/ZeroAlloc.Specification.Tests -c Release
-dotnet test tests/ZeroAlloc.Specification.Tests -c Release -f net8.0 --filter "FullyQualifiedName~CompositionAllocationTests"
+dotnet test tests/ZeroAlloc.Specification.Tests -c Release -f net10.0 --filter "FullyQualifiedName~CompositionAllocationTests"
 ```
 
 Packing: `dotnet pack` fails with ZAVERSION001 or ZAVERSION002 unless the version is passed on the

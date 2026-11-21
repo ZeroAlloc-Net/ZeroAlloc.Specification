@@ -182,7 +182,7 @@ public class NestedSpecificationTests
 
         var diagnostic = result.Diagnostics.Should().ContainSingle().Subject;
         diagnostic.Id.Should().Be("ZA005");
-        diagnostic.Severity.Should().Be(DiagnosticSeverity.Warning);
+        diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
         diagnostic.GetMessage().Should().Be(
             "Specification 'App.Outer.IsActive' is not generated because its containing type 'App.Outer' is not partial");
         diagnostic.Location.SourceTree!.GetText().ToString(diagnostic.Location.SourceSpan)
@@ -205,6 +205,7 @@ public class NestedSpecificationTests
 
         var diagnostic = result.Diagnostics.Should().ContainSingle().Subject;
         diagnostic.Id.Should().Be("ZA005");
+        diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
         diagnostic.GetMessage().Should().Be(
             "Specification 'App.Outer.Middle.IsActive' is not generated because its containing type 'App.Outer' is not partial");
         result.HintNames.Should().BeEmpty();

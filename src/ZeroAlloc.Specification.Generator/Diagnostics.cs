@@ -41,6 +41,6 @@ internal static class Diagnostics
         title: "Nested specification inside a containing type that is not partial",
         messageFormat: "Specification '{0}' is not generated because its containing type '{1}' is not partial",
         category: "ZeroAlloc.Specification",
-        defaultSeverity: DiagnosticSeverity.Warning,
+        defaultSeverity: DiagnosticSeverity.Error,
         isEnabledByDefault: true);
 }
