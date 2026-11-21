@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.0.0](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.4.1...ZeroAlloc.Specification-v2.0.0) (2026-11-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* the ZeroAlloc.Specification package no longer ships net8.0 assets, so consumers must target net10.0 or later; ZA005, a specification nested in a containing type that is not partial, is now an error instead of a warning. See the Behaviour change section of the pull request for migration steps.
+
+### Features
+
+* target net10.0 and net11.0, drop net8.0 ([1c32484](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/1c324841c0021f45c47090aa7f261d4b091e91ee))
+
+
+### Bug Fixes
+
+* report ZA005 as an error instead of a warning when a containing type of a nested specification is not partial ([1c32484](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/commit/1c324841c0021f45c47090aa7f261d4b091e91ee))
+
 ## [1.4.1](https://github.com/ZeroAlloc-Net/ZeroAlloc.Specification/compare/ZeroAlloc.Specification-v1.4.0...ZeroAlloc.Specification-v1.4.1) (2026-11-16)
 
 
