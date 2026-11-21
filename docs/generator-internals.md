@@ -97,4 +97,4 @@ Every containing type must be `partial` for that; otherwise the generator report
 
 ## Diagnostics Enforcement
 
-The generator does not emit any code for a type that gets ZA001, ZA002, ZA003 or ZA005. ZA004 is a warning; the code is still generated.
+The generator does not emit any code for a type that gets ZA001, ZA002, ZA003 or ZA005, and all four are errors, so the build fails instead of leaving the specification without its generated members. ZA004 is a warning; the code is still generated.
