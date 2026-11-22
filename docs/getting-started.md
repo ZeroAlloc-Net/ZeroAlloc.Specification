@@ -15,6 +15,8 @@ dotnet add package ZeroAlloc.Specification
 
 The source generator is bundled into this package and applied at compile time, with no runtime dependency. A single `PackageReference` is all you need.
 
+The generator needs the .NET 10 SDK 10.0.100 or later, or Visual Studio 2026 or later. It is built against Roslyn 5.0, and an older compiler skips it with warning CS9057, after which `And`, `Or` and `Not` are missing. Version 2.0.0 was built against Roslyn 5.12 and loads only in the .NET 11 SDK; on .NET 10, use 2.0.1 or later.
+
 > The standalone `ZeroAlloc.Specification.Generator` package is still published for backwards compatibility with existing direct PackageReferences, but new consumers should reference only `ZeroAlloc.Specification`.
 
 ## Your First Specification
